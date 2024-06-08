@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BancoAPI", "BancoAPI\BancoAPI.csproj", "{60474F4B-E937-4D94-9928-EDB0837BEB70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project-Cajero-Amdin", "Project-Cajero-Amdin\Project-Cajero-Amdin.csproj", "{EA58FE1C-EBEF-427E-A8E9-911301757695}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60474F4B-E937-4D94-9928-EDB0837BEB70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60474F4B-E937-4D94-9928-EDB0837BEB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60474F4B-E937-4D94-9928-EDB0837BEB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60474F4B-E937-4D94-9928-EDB0837BEB70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA58FE1C-EBEF-427E-A8E9-911301757695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA58FE1C-EBEF-427E-A8E9-911301757695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA58FE1C-EBEF-427E-A8E9-911301757695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA58FE1C-EBEF-427E-A8E9-911301757695}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46A3C750-AD27-4DBD-9E94-4DE60006E6B4}
+	EndGlobalSection
+EndGlobal
