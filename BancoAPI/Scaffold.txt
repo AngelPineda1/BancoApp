@@ -1,0 +1,1 @@
+﻿ Scaffold-Dbcontext "database=websitos_BancoMexico;user=websitos_AdminBancoMexico;server=websitos256.com;password=Banco2024" Pomelo.EntityFrameworkCore.MySql -o "Models/Entities" -f -nopluralize
