@@ -16,17 +16,60 @@ public partial class WebsitosBancoMexicoContext : DbContext
     {
     }
 
+    public virtual DbSet<Cajas> Cajas { get; set; }
+
+    public virtual DbSet<Servicio> Servicio { get; set; }
+
     public virtual DbSet<Turno> Turno { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("database=websitos_BancoMexico;user=websitos_AdminBancoMexico;server=websitos256.com;password=Banco2024", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.7-mariadb"));
+    public virtual DbSet<Usuarios> Usuarios { get; set; }
 
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
             .UseCollation("utf8mb3_general_ci")
             .HasCharSet("utf8mb3");
+
+        modelBuilder.Entity<Cajas>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("cajas");
+
+            entity.HasIndex(e => e.Username, "Username_UNIQUE").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Contrasena).HasMaxLength(300);
+            entity.Property(e => e.Nombre).HasMaxLength(100);
+            entity.Property(e => e.Username).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Servicio>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("servicio");
+
+            entity.HasIndex(e => e.IdCaja, "servicio_cajas_FK");
+
+            entity.HasIndex(e => e.IdTurno, "servicio_turno_FK");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.IdCaja).HasColumnType("int(11)");
+            entity.Property(e => e.IdTurno).HasColumnType("int(11)");
+            entity.Property(e => e.Ocupada).HasColumnType("smallint(1)");
+
+            entity.HasOne(d => d.IdCajaNavigation).WithMany(p => p.Servicio)
+                .HasForeignKey(d => d.IdCaja)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("servicio_cajas_FK");
+
+            entity.HasOne(d => d.IdTurnoNavigation).WithMany(p => p.Servicio)
+                .HasForeignKey(d => d.IdTurno)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("servicio_turno_FK");
+        });
 
         modelBuilder.Entity<Turno>(entity =>
         {
@@ -38,6 +81,20 @@ public partial class WebsitosBancoMexicoContext : DbContext
             entity.Property(e => e.Codigo)
                 .HasMaxLength(3)
                 .IsFixedLength();
+        });
+
+        modelBuilder.Entity<Usuarios>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("usuarios");
+
+            entity.HasIndex(e => e.Username, "Username_UNIQUE").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Contrasena).HasMaxLength(300);
+            entity.Property(e => e.Nombre).HasMaxLength(100);
+            entity.Property(e => e.Username).HasMaxLength(45);
         });
 
         OnModelCreatingPartial(modelBuilder);
