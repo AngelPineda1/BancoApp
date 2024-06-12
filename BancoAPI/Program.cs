@@ -16,6 +16,8 @@ builder.Services.AddDbContext<WebsitosBancoMexicoContext>(x => x.UseMySql(builde
 builder.Services.AddTransient < UsuariosRepository >();
 builder.Services.AddTransient<CajasRepository >();
 builder.Services.AddTransient<CajasValidator>();
+builder.Services.AddTransient<TurnosRepository >();
+builder.Services.AddTransient<ServicioRepository >();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -61,6 +63,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("MyPolicy");
 app.MapControllers();
-app.MapHub<CajasHub>("cajashub");
+
+app.MapHub<TurnosHub>("turnosHub");
+
 
 app.Run();

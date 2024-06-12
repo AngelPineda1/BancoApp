@@ -6,15 +6,10 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace BancoAPI.Hubs
 {
-    public class CajasHub:Hub
+    public class CajasHub(CajasRepository cajas, CajasValidator validations) : Hub
     {
-        private readonly CajasRepository _repository;
-        private readonly CajasValidator _validator;
-        public CajasHub(CajasRepository cajas,CajasValidator validations)
-        {
-            _repository = cajas;
-            _validator = validations;
-        }
+        private readonly CajasRepository _repository = cajas;
+        private readonly CajasValidator _validator = validations;
 
         public async Task Post(CajasDto dto)
         {

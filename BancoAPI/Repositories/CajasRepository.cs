@@ -2,14 +2,9 @@
 
 namespace BancoAPI.Repositories
 {
-    public class CajasRepository:Repository<Cajas>
+    public class CajasRepository(WebsitosBancoMexicoContext ctx) : Repository<Cajas>(ctx)
     {
-        public CajasRepository(WebsitosBancoMexicoContext ctx):base(ctx) 
-        {
-           Context=ctx;
-        }
-
-        public WebsitosBancoMexicoContext Context { get; }
+        public WebsitosBancoMexicoContext Context { get; } = ctx;
 
         public Cajas? Get(string usernam)
         {

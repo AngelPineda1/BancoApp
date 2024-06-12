@@ -11,7 +11,7 @@ public partial class Servicio
 
     public int IdCaja { get; set; }
 
-    public short Ocupada { get; set; }
+    public bool Ocupada { get; set; }
 
     public virtual Cajas IdCajaNavigation { get; set; } = null!;
 

@@ -58,7 +58,6 @@ public partial class WebsitosBancoMexicoContext : DbContext
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.IdCaja).HasColumnType("int(11)");
             entity.Property(e => e.IdTurno).HasColumnType("int(11)");
-            entity.Property(e => e.Ocupada).HasColumnType("smallint(1)");
 
             entity.HasOne(d => d.IdCajaNavigation).WithMany(p => p.Servicio)
                 .HasForeignKey(d => d.IdCaja)
