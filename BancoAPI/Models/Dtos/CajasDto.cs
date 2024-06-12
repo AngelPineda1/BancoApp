@@ -10,4 +10,9 @@
 
         public string Username { get; set; } = null!;
     }
+
+    public class CajasUpDto:CajasDto
+    {
+        public int Id { get; set; } 
+    }
 }

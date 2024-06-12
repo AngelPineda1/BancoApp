@@ -1,5 +1,6 @@
 using BancoAPI.Hubs;
 using BancoAPI.Models.Entities;
+using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<WebsitosBancoMexicoContext>(x => x.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.7-mariadb")));
 builder.Services.AddTransient < UsuariosRepository >();
 builder.Services.AddTransient<CajasRepository >();
+builder.Services.AddTransient<CajasValidator>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
