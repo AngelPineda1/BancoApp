@@ -1,3 +1,4 @@
+using BancoAPI.Hubs;
 using BancoAPI.Models.Entities;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,6 +41,7 @@ builder.Services.AddCors(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -57,5 +59,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("MyPolicy");
 app.MapControllers();
+app.MapHub<CajasHub>("cajashub");
 
 app.Run();
