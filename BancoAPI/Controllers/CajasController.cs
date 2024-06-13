@@ -1,9 +1,11 @@
-﻿using BancoAPI.Models.Dtos;
+﻿using BancoAPI.Helpers;
+using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Entities;
 using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 
 namespace BancoAPI.Controllers
 {
@@ -36,6 +38,7 @@ namespace BancoAPI.Controllers
                 var results = _cajasValidator.Validate(dto);
                 if (results.IsValid)
                 {
+                    dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
                     Cajas cajas = new Cajas()
                     {
                         Id = 0,
@@ -60,10 +63,17 @@ namespace BancoAPI.Controllers
                 var caja = _cajasRepository.Get(dto.Id);
                 if (caja != null)
                 {
+                    var encrypter = new Encrypter();
+
 
                     var results = _cajasValidator.Validate(dto);
                     if (results.IsValid)
                     {
+                        if (encrypter.IsPasswordChanged(caja.Contrasena, dto.Contrasena))
+                        {
+                            dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
+                            
+                        }
                         Cajas cajas = new Cajas()
                         {
 
