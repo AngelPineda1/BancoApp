@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CLienteMAUI.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:v="clr-namespace:CLienteMAUI.Views"
+    xmlns:local="clr-namespace:CLienteMAUI"
+    xmlns:vm="clr-namespace:CLienteMAUI.ViewModel"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    Title="CLienteMAUI">
+
+
+    <Shell.BindingContext>
+        <vm:TurnoViewModel />
+    </Shell.BindingContext>
+    
+    <ShellContent
+        Title="Inicio"
+        ContentTemplate="{DataTemplate v:InicioView}"
+        Route="Inicio" />
+    
+    <ShellContent Title="Turno"
+                  ContentTemplate="{DataTemplate v:TurnoView}"
+                  Route="Turno" />
+
+</Shell>

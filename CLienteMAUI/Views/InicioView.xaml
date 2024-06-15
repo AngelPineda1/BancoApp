@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CLienteMAUI.ViewModel"
+             Shell.NavBarIsVisible="False"
+             x:Class="CLienteMAUI.Views.InicioView"
+             x:DataType="vm:TurnoViewModel"
+             Title="InicioView">
+    
+    <VerticalStackLayout Spacing="20" VerticalOptions="Center">
+        <Label 
+            Text="BancoMexico"
+            FontSize="40"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+
+        <Label Text="¿Que tipo de atención necesitas?"
+            
+               FontSize="Subtitle"
+               VerticalTextAlignment="Center"
+               HorizontalTextAlignment="Center"/>
+
+        <Button Text="Pedir turno"
+                WidthRequest="300"
+                FontSize="Subtitle"
+                Padding="0,20"
+                Command="{Binding NavegarVistaCommand}"
+                CommandParameter="Turno"
+                BackgroundColor="{StaticResource colorPrimario}">
+        </Button>
+    </VerticalStackLayout>
+</ContentPage>

@@ -11,7 +11,11 @@ public partial class Servicio
 
     public int IdCaja { get; set; }
 
-    public bool Ocupada { get; set; }
+    public DateTime? FechaIncio { get; set; }
+
+    public DateTime FechaTermino { get; set; }
+
+    public string EstadoServicio { get; set; } = null!;
 
     public virtual Cajas IdCajaNavigation { get; set; } = null!;
 

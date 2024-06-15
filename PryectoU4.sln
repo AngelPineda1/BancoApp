@@ -5,7 +5,9 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoAPI", "BancoAPI\BancoAPI.csproj", "{60474F4B-E937-4D94-9928-EDB0837BEB70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BancoMexicoWeb", "BancoMexicoWeb\BancoMexicoWeb.csproj", "{B3FE9285-470A-4E72-AA31-BD48030311F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BancoMexicoWeb", "BancoMexicoWeb\BancoMexicoWeb.csproj", "{B3FE9285-470A-4E72-AA31-BD48030311F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLienteMAUI", "CLienteMAUI\CLienteMAUI.csproj", "{DA7BF938-0696-4B28-A711-809C89FCAC38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,12 @@ Global
 		{B3FE9285-470A-4E72-AA31-BD48030311F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3FE9285-470A-4E72-AA31-BD48030311F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FE9285-470A-4E72-AA31-BD48030311F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA7BF938-0696-4B28-A711-809C89FCAC38}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

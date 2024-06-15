@@ -10,7 +10,8 @@
     }
 
 
-    public class UsuarioUpDto:UsuarioDto
+    public class UsuarioUpDto : UsuarioDto
     {
         public int Id { get; set; }
+    }
 }

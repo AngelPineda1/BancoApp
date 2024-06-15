@@ -11,9 +11,11 @@ public partial class Cajas
 
     public string Contrasena { get; set; } = null!;
 
-    public bool? Activa { get; set; }
+    public int? Activa { get; set; }
 
     public string Username { get; set; } = null!;
 
     public virtual ICollection<Servicio> Servicio { get; set; } = new List<Servicio>();
+
+    public virtual ICollection<Turno> Turno { get; set; } = new List<Turno>();
 }
