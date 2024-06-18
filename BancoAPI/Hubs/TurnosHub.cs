@@ -191,49 +191,49 @@ namespace BancoAPI.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var caja = _cajasRepository.GetAll()
-                .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            //var caja = _cajasRepository.GetAll()
+            //    .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            int turnoSiguiente = 0;
+            //int turnoSiguiente = 0;
 
-            var turno = _turnoRepository.GetAll().FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            //var turno = _turnoRepository.GetAll().FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            if (caja != null)
-            {
-                caja.Estado = (int)EstadoCaja.Inactiva;
-                caja.ConnectionId = null;
-                var turnoAtendiendo = caja.Turno.FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString());
+            //if (caja != null)
+            //{
+            //    caja.Estado = (int)EstadoCaja.Inactiva;
+            //    caja.ConnectionId = null;
+            //    var turnoAtendiendo = caja.Turno.FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString());
 
-                if (turnoAtendiendo != null)
-                {
-                    turnoAtendiendo.Estado = EstadoTurno.Atendido.ToString();
-                    turnoAtendiendo.FechaTermino = DateTime.Now;
-                    _turnoRepository.Update(turnoAtendiendo);
-                }
-                _cajasRepository.Update(caja);
+            //    if (turnoAtendiendo != null)
+            //    {
+            //        turnoAtendiendo.Estado = EstadoTurno.Atendido.ToString();
+            //        turnoAtendiendo.FechaTermino = DateTime.Now;
+            //        _turnoRepository.Update(turnoAtendiendo);
+            //    }
+            //    _cajasRepository.Update(caja);
 
-            }
-            else if (turno != null)
-            {
-                if (turno.Estado != EstadoTurno.Atendiendo.ToString() && turno.Estado != EstadoTurno.Atendido.ToString())
-                    _turnoRepository.Delete(turno);
-
-
-                turnoSiguiente = _turnoRepository.GetAll()
-                   .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
-                   .OrderBy(x => x.Numero)
-                   .FirstOrDefault()?.Numero ?? 0;
-            }
-
-            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-            {
-                Estado = x.Estado,
-                Nombre = x.Nombre,
-                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-            }).ToList();
+            //}
+            //else if (turno != null)
+            //{
+            //    if (turno.Estado != EstadoTurno.Atendiendo.ToString() && turno.Estado != EstadoTurno.Atendido.ToString())
+            //        _turnoRepository.Delete(turno);
 
 
-            await Clients.All.SendAsync("CajaDesconectada", cajas, turnoSiguiente);
+            //    turnoSiguiente = _turnoRepository.GetAll()
+            //       .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
+            //       .OrderBy(x => x.Numero)
+            //       .FirstOrDefault()?.Numero ?? 0;
+            //}
+
+            //var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
+            //{
+            //    Estado = x.Estado,
+            //    Nombre = x.Nombre,
+            //    NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
+            //}).ToList();
+
+
+            //await Clients.All.SendAsync("CajaDesconectada", cajas, turnoSiguiente);
 
 
             await base.OnDisconnectedAsync(exception);

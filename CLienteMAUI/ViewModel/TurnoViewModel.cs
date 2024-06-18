@@ -86,21 +86,21 @@ namespace CLienteMAUI.ViewModel
             });
 
 
-            _hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    if (Turno.Numero == turnoSiguiente)
-                        EstadoTurno = "Su turno está próximo";
+            //_hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
+            //{
+            //    MainThread.BeginInvokeOnMainThread(() =>
+            //    {
+            //        if (Turno.Numero == turnoSiguiente)
+            //            EstadoTurno = "Su turno está próximo";
 
-                    Cajas.Clear();
-                    foreach (var item in cajas)
-                    {
-                        item.Nombre = item.Nombre.ToUpper();
-                        Cajas.Add(item);
-                    }
-                });
-            });
+            //        Cajas.Clear();
+            //        foreach (var item in cajas)
+            //        {
+            //            item.Nombre = item.Nombre.ToUpper();
+            //            Cajas.Add(item);
+            //        }
+            //    });
+            //});
 
             Task.Run(async () =>
             {
