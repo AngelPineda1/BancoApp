@@ -5,8 +5,8 @@
     {
         Pendiente,
         Atendido,
-        Atendiendo,
-        Cancelado
+        Cancelado,
+        Atendiendo
     }
 
     public enum EstadoCaja

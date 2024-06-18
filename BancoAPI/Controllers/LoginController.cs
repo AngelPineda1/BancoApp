@@ -19,6 +19,7 @@ namespace BancoAPI.Controllers
         {
             var user = UsuariosRepository.Get(login.UserName);
             var cajas = CajasRepository.Get(login.UserName);
+
             if (user != null)
             {
                 var succes = Verifier.VerifyPassword(login.Password, user.Contrasena);

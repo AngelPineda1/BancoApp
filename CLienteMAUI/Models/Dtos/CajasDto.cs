@@ -22,7 +22,7 @@
 
         public int? Estado { get; set; }
 
-        public string NumeroActual { get; set; } = string.Empty;
+        public string NumeroActual { get; set; }
 
     }
 

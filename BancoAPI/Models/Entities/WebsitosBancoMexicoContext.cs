@@ -18,8 +18,6 @@ public partial class WebsitosBancoMexicoContext : DbContext
 
     public virtual DbSet<Cajas> Cajas { get; set; }
 
-    public virtual DbSet<Servicio> Servicio { get; set; }
-
     public virtual DbSet<Turno> Turno { get; set; }
 
     public virtual DbSet<Usuarios> Usuarios { get; set; }
@@ -43,40 +41,11 @@ public partial class WebsitosBancoMexicoContext : DbContext
             entity.HasIndex(e => e.Username, "Username_UNIQUE").IsUnique();
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
-            entity.Property(e => e.Activa).HasColumnType("int(11)");
+            entity.Property(e => e.ConnectionId).HasMaxLength(100);
             entity.Property(e => e.Contrasena).HasMaxLength(300);
+            entity.Property(e => e.Estado).HasColumnType("int(11)");
             entity.Property(e => e.Nombre).HasMaxLength(100);
             entity.Property(e => e.Username).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<Servicio>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("servicio");
-
-            entity.HasIndex(e => e.IdCaja, "servicio_cajas_FK");
-
-            entity.HasIndex(e => e.IdTurno, "servicio_turno_FK");
-
-            entity.Property(e => e.Id).HasColumnType("int(11)");
-            entity.Property(e => e.EstadoServicio).HasColumnType("enum('Atendiendo','Atendido')");
-            entity.Property(e => e.FechaIncio)
-                .HasDefaultValueSql("current_timestamp()")
-                .HasColumnType("datetime");
-            entity.Property(e => e.FechaTermino).HasColumnType("datetime");
-            entity.Property(e => e.IdCaja).HasColumnType("int(11)");
-            entity.Property(e => e.IdTurno).HasColumnType("int(11)");
-
-            entity.HasOne(d => d.IdCajaNavigation).WithMany(p => p.Servicio)
-                .HasForeignKey(d => d.IdCaja)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("servicio_cajas_FK");
-
-            entity.HasOne(d => d.IdTurnoNavigation).WithMany(p => p.Servicio)
-                .HasForeignKey(d => d.IdTurno)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("servicio_turno_FK");
         });
 
         modelBuilder.Entity<Turno>(entity =>
@@ -88,10 +57,13 @@ public partial class WebsitosBancoMexicoContext : DbContext
             entity.HasIndex(e => e.IdCaja, "turno_cajas_FK");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.ConnectionId).HasMaxLength(100);
             entity.Property(e => e.Estado).HasMaxLength(100);
+            entity.Property(e => e.FechaAtendido).HasColumnType("datetime");
             entity.Property(e => e.FechaCreacion)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime");
+            entity.Property(e => e.FechaTermino).HasColumnType("datetime");
             entity.Property(e => e.IdCaja).HasColumnType("int(11)");
             entity.Property(e => e.Numero).HasColumnType("int(11)");
 

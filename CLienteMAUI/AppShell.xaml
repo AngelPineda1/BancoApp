@@ -24,4 +24,7 @@
                   ContentTemplate="{DataTemplate v:TurnoView}"
                   Route="Turno" />
 
+    <ShellContent Title="Gracias"
+                  ContentTemplate="{DataTemplate v:GraciasPorSuPreferenciaView}"
+                  Route="Gracias" />
 </Shell>

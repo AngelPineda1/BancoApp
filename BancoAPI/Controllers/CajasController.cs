@@ -1,6 +1,7 @@
 ﻿using BancoAPI.Helpers;
 using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Entities;
+using BancoAPI.Models.Enum;
 using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -45,7 +46,7 @@ namespace BancoAPI.Controllers
                         Nombre = dto.Nombre,
                         Username = dto.Username,
                         Contrasena = dto.Contrasena,
-                        Activa = true
+                        Estado = (int)EstadoCaja.Activa
                     };
                     _cajasRepository.Insert(cajas);
                     return Created();
@@ -56,7 +57,7 @@ namespace BancoAPI.Controllers
         }
 
         [HttpPut]
-        public IActionResult Pu(CajasUpDto dto)
+        public IActionResult Put(CajasUpDto dto)
         {
             if (dto != null)
             {
@@ -80,7 +81,7 @@ namespace BancoAPI.Controllers
                             Nombre = dto.Nombre,
                             Username = dto.Username,
                             Contrasena = dto.Contrasena,
-                            Activa = dto.Activa
+                            Estado = dto.Activa
                         };
                         _cajasRepository.Update(cajas);
                         return Ok();
@@ -97,14 +98,14 @@ namespace BancoAPI.Controllers
         public IActionResult Delete(int id)
         {
             var caja= _cajasRepository.Get(id);
-            if (caja != null && caja.Activa!=false)
+            if (caja != null && caja.Estado!=(int)EstadoCaja.Inactiva)
             {
                 Cajas _cajas = new Cajas()
                 {
                     Id = caja.Id,
                     Username = caja.Username,
                     Contrasena = caja.Contrasena,
-                    Activa = false,
+                    Estado = (int)EstadoCaja.Inactiva,
                     Nombre = caja.Nombre,
                 };
                 _cajasRepository.Update(_cajas);

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CLienteMAUI.Views.GraciasPorSuPreferenciaView"
+             xmlns:vm="clr-namespace:CLienteMAUI.ViewModel"
+             x:DataType="vm:TurnoViewModel"
+             Title="GraciasPorSuPreferenciaView">
+    <VerticalStackLayout VerticalOptions="Center"
+                         Spacing="30"
+                         HorizontalOptions="Center">
+        <Label Text="Gracias por su preferencia, vuelva pronto"
+               FontSize="35"
+               TextColor="#295D99"
+               FontAttributes="Bold"
+               FontFamily="Monse"
+               HorizontalTextAlignment="Center"
+               VerticalOptions="Center"/>
+        <Image Source="gracias.png"
+               HorizontalOptions="Center"/>
+    </VerticalStackLayout>
+</ContentPage>

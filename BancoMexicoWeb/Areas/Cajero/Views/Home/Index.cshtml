@@ -1,1 +1,39 @@
-﻿<h1>Cajero</h1>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link href="~/css/estilosCajero.css" rel="stylesheet">
+    <title>Cajero de Banco - Turnos</title>
+</head>
+
+<body>
+    <div class="header">
+        <div class="bank-name">BancoMéxico</div>
+        <div class="bank-name" style="font-size:2.5rem">@User.Identity?.Name</div>
+        <div class="cashier-name">Cajero: @User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value</div>
+    </div>
+    <div class="container">
+        <h1>Turno que se está atendiendo</h1>
+        <div class="turno" id="turnoActual">0</div>
+        <div class="buttons">
+            <button id="atendiendo">Atender Cliente</button>
+            @* <button id="siguiente" onclick="siguiente()" disabled>Siguiente</button> *@
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+  
+
+    <script>
+        const idCaja = @User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    </script>
+
+
+    <script src="~/js/index.js"></script>
+</body>
+
+</html>

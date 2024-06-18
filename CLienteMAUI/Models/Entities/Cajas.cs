@@ -15,7 +15,5 @@ public partial class Cajas
 
     public string Username { get; set; } = null!;
 
-    public string? ConnectionId { get; set; }
-
     public virtual ICollection<Turno> Turno { get; set; } = new List<Turno>();
 }

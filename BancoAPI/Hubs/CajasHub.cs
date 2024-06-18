@@ -1,5 +1,6 @@
 ﻿using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Entities;
+using BancoAPI.Models.Enum;
 using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.SignalR;
@@ -24,7 +25,7 @@ namespace BancoAPI.Hubs
                         Nombre = dto.Nombre,
                         Username = dto.Username,
                         Contrasena = dto.Contrasena,
-                        Activa = true
+                        Estado = (int)EstadoCaja.Activa
                     };
                     _repository.Insert(cajas);
                     await Clients.All.SendAsync("CajaAgregada", cajas);

@@ -12,12 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<WebsitosBancoMexicoContext>(x => x.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.7-mariadb")));
-builder.Services.AddTransient < UsuariosRepository >();
+builder.Services.AddDbContext<WebsitosBancoMexicoContext>(x => 
+x.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.11.7-mariadb"))
+);
+builder.Services.AddTransient <UsuariosRepository>();
 builder.Services.AddTransient<CajasRepository >();
 builder.Services.AddTransient<CajasValidator>();
 builder.Services.AddTransient<TurnosRepository >();
-builder.Services.AddTransient<ServicioRepository >();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -64,7 +65,7 @@ app.UseAuthorization();
 app.UseCors("MyPolicy");
 app.MapControllers();
 
-app.MapHub<TurnosHub>("turnosHub");
+app.MapHub<TurnosHub>("/turnosHub");
 
 
 app.Run();

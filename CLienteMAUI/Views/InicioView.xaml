@@ -9,7 +9,7 @@
     
     <VerticalStackLayout Spacing="20" VerticalOptions="Center">
         <Label 
-            Text="BancoMexico"
+            Text="BancoMéxico"
             FontSize="40"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
@@ -24,7 +24,7 @@
                 WidthRequest="300"
                 FontSize="Subtitle"
                 Padding="0,20"
-                Command="{Binding NavegarVistaCommand}"
+                Command="{Binding GenerarTurnoCommand}"
                 CommandParameter="Turno"
                 BackgroundColor="{StaticResource colorPrimario}">
         </Button>

@@ -56,6 +56,7 @@ namespace BancoAPI.Helpers
             List<Claim> claims = new List<Claim>();
 
             claims.Add(new Claim(ClaimTypes.Name, cajas.Nombre));
+            claims.Add(new Claim(ClaimTypes.Email, cajas.Username));
             claims.Add(new Claim(ClaimTypes.NameIdentifier, cajas.Id.ToString()));
             claims.Add(new Claim(ClaimTypes.Role, role));
             claims.Add(new Claim(JwtRegisteredClaimNames.Iss, Iss));
