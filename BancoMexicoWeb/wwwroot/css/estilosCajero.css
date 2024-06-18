@@ -1,5 +1,4 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,7 +88,7 @@ button {
 }
 
 #atendiendo:not(:disabled):hover {
-    background-color: #388e3c;
+    background-color: #295D99;
     transform: scale(1.05);
 }
 

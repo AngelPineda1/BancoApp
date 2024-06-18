@@ -51,6 +51,8 @@ namespace CLienteMAUI.ViewModel
 
                     if (cajas == null)
                         return;
+
+                    Cajas.Clear();
                     foreach (var item in cajas)
                     {
                         item.Nombre = item.Nombre.ToUpper();
@@ -144,7 +146,7 @@ namespace CLienteMAUI.ViewModel
         [RelayCommand]
         public async Task GraciasPorSuPreferencia()
         {
-            await Shell.Current.GoToAsync($"//GraciasPorSuPreferencia");
+            await Shell.Current.GoToAsync($"//Gracias");
         }
 
     }
