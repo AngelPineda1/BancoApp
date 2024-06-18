@@ -19,7 +19,15 @@ namespace BancoAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var datos = _cajasRepository.GetAll();
+            var datos = _cajasRepository.GetAll().Select(x=>new Cajas()
+            {
+                Estado=x.Estado,
+                Nombre=x.Nombre,
+                Username=x.Username,
+                ConnectionId=x.ConnectionId,
+                Contrasena=x.Contrasena
+            });
+           
             return Ok(datos);
         }
 
