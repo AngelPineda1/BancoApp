@@ -147,6 +147,15 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
+                    <Label FontSize="20">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Turno: " />
+                                <Span Text="{Binding Turno.Numero}"
+                                      TextColor="{StaticResource colorPrimario}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
                     <Image Source="carita.png" />
                     <Button BackgroundColor="{StaticResource colorPrimario}"
                             Text="Ok"
