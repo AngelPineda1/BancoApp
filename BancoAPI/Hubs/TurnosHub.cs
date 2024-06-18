@@ -27,10 +27,21 @@ namespace BancoAPI.Hubs
             if (turnos.Any())
                 ultimoTurno = turnos.Max(x => x.Numero);
 
+
+            var numeroProximo = turnos
+                .Where(x => x.Estado == EstadoTurno.Atendiendo.ToString())
+                .OrderByDescending(x => x.Numero)
+                .FirstOrDefault()?.Numero;
+
+
             var turno = new TurnoDto()
             {
                 Numero = ultimoTurno + 1,
             };
+
+
+            if (turno.Numero == (numeroProximo + 1))
+                turno.Proximo = true;
 
             var cajasDisponibles = _cajasRepository.GetAll().Where(x => x.Estado == (int)EstadoCaja.Activa);
 
@@ -48,10 +59,10 @@ namespace BancoAPI.Hubs
                 turno.CajaNombre = caja.Nombre.ToUpper();
                 turno.FechaAtencion = DateTime.Now;
                 caja.Estado = (int)EstadoCaja.Ocupada;
-                
+
                 if (caja.ConnectionId != null)
-                    cajaConnectionId =  caja.ConnectionId;
-                
+                    cajaConnectionId = caja.ConnectionId;
+
                 _cajasRepository.Update(caja);
             }
 
@@ -72,15 +83,10 @@ namespace BancoAPI.Hubs
                 NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
             }).ToList();
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-
-            var jsonCajas = JsonSerializer.Serialize(cajas, jsonOptions);
 
 
-            await Clients.Clients(connectionId,cajaConnectionId).SendAsync("TurnoGenerado", turno, jsonCajas);
+
+            await Clients.Clients(connectionId, cajaConnectionId).SendAsync("TurnoGenerado", turno, cajas);
         }
 
         public async Task AtenderCliente(int idcaja)
@@ -97,6 +103,15 @@ namespace BancoAPI.Hubs
                 .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
                 .OrderBy(x => x.Numero)
                 .FirstOrDefault();
+
+
+            var turnoFuturo = _turnoRepository.GetAll()
+               .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
+               .OrderBy(x => x.Numero)
+               .Skip(1)
+               .FirstOrDefault();
+
+
 
             var turnoAnterior = _turnoRepository.GetAll()
                 .FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString() && x.IdCaja == idcaja);
@@ -140,11 +155,37 @@ namespace BancoAPI.Hubs
             };
 
 
-
-            await Clients.All.SendAsync("TurnoAtendido", turnoDto, cajas, cajaExite.Id);
+            await Clients.All.SendAsync("TurnoAtendido", turnoDto, cajas, cajaExite.Id, turnoFuturo?.Numero ?? 0);
 
         }
 
+
+        public async Task CancelarTurno(int idturno, int idcaja)
+        {
+            var cajaExite = _cajasRepository.Get(idcaja);
+
+            if (cajaExite == null)
+                return;
+
+            var turnoCancelar = _turnoRepository.GetAll().FirstOrDefault(x => x.Numero == idturno);
+
+            if (turnoCancelar == null)
+                return;
+
+            turnoCancelar.Estado = EstadoTurno.Cancelado.ToString();
+            turnoCancelar.FechaTermino = DateTime.Now;
+
+            _turnoRepository.Update(turnoCancelar);
+
+            var turnoCancelarDto = new TurnoDto()
+            {
+                Numero = turnoCancelar.Numero,
+                Estado = turnoCancelar.Estado,
+                IdCaja = turnoCancelar.IdCaja,
+            };
+
+            await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id);
+        }
 
 
 
@@ -152,6 +193,10 @@ namespace BancoAPI.Hubs
         {
             var caja = _cajasRepository.GetAll()
                 .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+
+            int turnoSiguiente = 0;
+
+            var turno = _turnoRepository.GetAll().FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
             if (caja != null)
             {
@@ -167,15 +212,29 @@ namespace BancoAPI.Hubs
                 }
                 _cajasRepository.Update(caja);
 
-                var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-                {
-                    Estado = x.Estado,
-                    Nombre = x.Nombre,
-                    NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-                }).ToList();
-
-                await Clients.All.SendAsync("CajaDesconectada", cajas);
             }
+            else if (turno != null)
+            {
+                if (turno.Estado != EstadoTurno.Atendiendo.ToString() && turno.Estado != EstadoTurno.Atendido.ToString())
+                    _turnoRepository.Delete(turno);
+
+
+                turnoSiguiente = _turnoRepository.GetAll()
+                   .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
+                   .OrderBy(x => x.Numero)
+                   .FirstOrDefault()?.Numero ?? 0;
+            }
+
+            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
+            {
+                Estado = x.Estado,
+                Nombre = x.Nombre,
+                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
+            }).ToList();
+
+
+            await Clients.All.SendAsync("CajaDesconectada", cajas, turnoSiguiente);
+
 
             await base.OnDisconnectedAsync(exception);
         }

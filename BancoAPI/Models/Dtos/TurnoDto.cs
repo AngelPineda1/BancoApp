@@ -13,6 +13,8 @@
 
         public int? IdCaja { get; set; }
 
+        public bool Proximo { get; set; } = false;
+
         public string CajaNombre { get; set; } = string.Empty;
 
     }

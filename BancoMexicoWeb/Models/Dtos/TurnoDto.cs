@@ -10,6 +10,7 @@
 
         public DateTime? FechaCreacion { get; set; }
         public DateTime? FechaAtencion { get; set; }
+        public bool Proximo { get; set; } = false;
 
         public int? IdCaja { get; set; }
 

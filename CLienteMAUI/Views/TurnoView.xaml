@@ -47,7 +47,7 @@
                          BackgroundColor="LightGray" />
                 <Label Text="Tiempo estimado de espera"
                        FontSize="Medium" />
-                <Label Text="10 minutos"
+                <Label Text="{Binding EstadoTurno}"
                        FontSize="Medium"
                        TextColor="{StaticResource colorPrimario}" />
             </VerticalStackLayout>

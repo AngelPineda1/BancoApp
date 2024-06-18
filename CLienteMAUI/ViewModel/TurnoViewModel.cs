@@ -22,7 +22,8 @@ namespace CLienteMAUI.ViewModel
         [ObservableProperty]
         private TurnoDto turno = new();
 
-
+        [ObservableProperty]
+        private string estadoTurno = "10 minutos";
         public ObservableCollection<CajasDto2> Cajas { get; set; } = [];
 
         private readonly HubConnection _hubConnection;
@@ -36,21 +37,15 @@ namespace CLienteMAUI.ViewModel
                 .Build();
 
 
-            _hubConnection.On<TurnoDto, string>("TurnoGenerado", (turnodto, cajasJson) =>
+            _hubConnection.On<TurnoDto, List<CajasDto2>>("TurnoGenerado", (turnodto, cajas) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (string.IsNullOrWhiteSpace(cajasJson))
-                        return;
-
                     Turno = turnodto;
-
                     OnPropertyChanged(nameof(Turno));
-
-                    var cajas = JsonSerializer.Deserialize<List<CajasDto2>>(cajasJson);
-
-                    if (cajas == null)
-                        return;
+                    
+                    if (Turno.Proximo)
+                        EstadoTurno = "Su turno está próximo";
 
                     Cajas.Clear();
                     foreach (var item in cajas)
@@ -64,7 +59,7 @@ namespace CLienteMAUI.ViewModel
 
 
 
-            _hubConnection.On<TurnoDto, List<CajasDto2>, int>("TurnoAtendido", (turno, cajas, idcaja) =>
+            _hubConnection.On<TurnoDto, List<CajasDto2>, int, int>("TurnoAtendido", (turno, cajas, idcaj, numeroFuturo) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -74,7 +69,14 @@ namespace CLienteMAUI.ViewModel
                         Turno.CajaNombre = turno.CajaNombre;
                         OnPropertyChanged(nameof(Turno));
                     }
+
+                    if (Turno.Numero == numeroFuturo)
+                    {
+                        EstadoTurno = "Su turno está próximo";
+                    }
+
                     Cajas.Clear();
+
                     foreach (var item in cajas)
                     {
                         item.Nombre = item.Nombre.ToUpper();
@@ -84,10 +86,13 @@ namespace CLienteMAUI.ViewModel
             });
 
 
-            _hubConnection.On<List<CajasDto2>>("CajaDesconectada", ( cajas) =>
+            _hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
+                    if (Turno.Numero == turnoSiguiente)
+                        EstadoTurno = "Su turno está próximo";
+
                     Cajas.Clear();
                     foreach (var item in cajas)
                     {
@@ -128,6 +133,7 @@ namespace CLienteMAUI.ViewModel
                 await _hubConnection.InvokeAsync("GenerarTurno");
 
                 await Shell.Current.GoToAsync($"//{vista}");
+
             }
             catch (Exception ex)
             {

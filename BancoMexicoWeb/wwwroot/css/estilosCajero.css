@@ -60,6 +60,18 @@ h1 {
     justify-content: space-around;
 }
 
+#cancelar{
+    border: 2px solid #FF0000;
+    background-color:#fff;
+    color: #FF0000;
+}
+
+    #cancelar:hover {
+        background-color: #FF0000;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
 button {
     padding: 15px 25px;
     font-size: 18px;
@@ -92,7 +104,4 @@ button {
     transform: scale(1.05);
 }
 
-#siguiente:not(:disabled):hover {
-    background-color: #1976d2;
-    transform: scale(1.05);
-}
+
