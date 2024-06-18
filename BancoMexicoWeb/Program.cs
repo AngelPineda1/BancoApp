@@ -1,3 +1,4 @@
+using BancoMexicoWeb.Areas.Admin.Models.Validators;
 using BancoMexicoWeb.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMvc();
 builder.Services.AddTransient<TurnoService>();
+builder.Services.AddTransient<CajasValidator>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
     {
         options.LoginPath = "/Home/Login";

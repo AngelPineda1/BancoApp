@@ -58,13 +58,13 @@ namespace BancoMexicoWeb.Controllers
                     var roleClaim = claims.FirstOrDefault(c => c.Type == "role")?.Value;
                     var nameClaim = claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
                     var nameid = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
-                    var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+                    //var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
                     var claimsLista = new List<Claim>(){
                         new Claim(ClaimTypes.Name, nameClaim),
                         new Claim(ClaimTypes.Role, roleClaim),
                         new Claim(ClaimTypes.NameIdentifier, nameid),
-                        new Claim(ClaimTypes.Email, email)
+                        //new Claim(ClaimTypes.Email, email)
                     };
 
 

@@ -25,7 +25,8 @@ namespace BancoAPI.Controllers
                 Nombre=x.Nombre,
                 Username=x.Username,
                 ConnectionId=x.ConnectionId,
-                Contrasena=x.Contrasena
+                Contrasena=x.Contrasena,
+                Id=x.Id
             });
            
             return Ok(datos);
