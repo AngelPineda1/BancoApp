@@ -2,6 +2,7 @@
 using BancoMexicoWeb.Areas.Admin.Models.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -42,6 +43,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
             return View();
         }
         [HttpGet]
+        [Route("{area}/Agregar")]
         public async Task<IActionResult> Agregar()
         {
             AgregarCajaViewModel cajaViewModel = new AgregarCajaViewModel();
@@ -49,6 +51,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [Route("Agregar")]
         public async Task<IActionResult> Agregar(AgregarCajaViewModel viewModel)
         {
             _httpClient.BaseAddress = new Uri("https://bancomexicoapi.websitos256.com/");
@@ -69,7 +72,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                     var json=System.Text.Json.JsonSerializer.Serialize(cajas);
                     var content=new StringContent(json,Encoding.UTF8,"application/json");
                     var response = await
-                        _httpClient.PostAsync("/api/Caja", content);
+                        _httpClient.PostAsync("/api/Cajas", content);
                     if (response.IsSuccessStatusCode)
                     {
                         return RedirectToAction("Index");
@@ -78,7 +81,12 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                     
                     
                 }
-                return View(results.Errors.Select(x => x.ErrorMessage));
+                foreach (var item in results.Errors)
+                {
+
+                ModelState.AddModelError("",item.ErrorMessage);
+                }
+                return View(viewModel);
             }
             return View();
         }

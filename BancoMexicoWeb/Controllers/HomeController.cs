@@ -22,6 +22,7 @@ namespace BancoMexicoWeb.Controllers
 
 
         [HttpGet]
+        
         public IActionResult Login()
         {
             return View();

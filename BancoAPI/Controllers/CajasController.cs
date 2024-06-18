@@ -90,7 +90,7 @@ namespace BancoAPI.Controllers
                             Nombre = dto.Nombre,
                             Username = dto.Username,
                             Contrasena = dto.Contrasena,
-                            Estado = dto.Activa
+                            Estado = dto.Estado
                         };
                         _cajasRepository.Update(cajas);
                         return Ok();
