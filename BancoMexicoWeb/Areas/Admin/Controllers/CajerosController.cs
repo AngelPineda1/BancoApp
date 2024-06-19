@@ -43,7 +43,6 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
             return View();
         }
         [HttpGet]
-        [Route("{area}/Agregar")]
         public async Task<IActionResult> Agregar()
         {
             AgregarCajaViewModel cajaViewModel = new AgregarCajaViewModel();

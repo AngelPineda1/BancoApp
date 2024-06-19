@@ -47,7 +47,7 @@
                          BackgroundColor="LightGray" />
                 <Label Text="Tiempo estimado de espera"
                        FontSize="Medium" />
-                <Label Text="{Binding EstadoTurno}"
+                <Label Text="{Binding EstadoTurnoMensaje}"
                        FontSize="Medium"
                        TextColor="{StaticResource colorPrimario}" />
             </VerticalStackLayout>
@@ -167,6 +167,51 @@
 
         </Grid>
 
+
+        <Grid Grid.RowSpan="3">
+
+            <Grid.Resources>
+                <Style TargetType="Grid">
+                    <Setter Property="IsVisible"
+                            Value="False" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Turno.Estado}"
+                                     TargetType="Grid"
+                                     Value="Cancelado">
+                            <Setter Property="IsVisible"
+                                    Value="True" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
+
+            <BoxView Background="#000"
+                     Opacity=".5" />
+
+            <Border Background="#fff"
+                    BackgroundColor="#fff"
+                    WidthRequest="300"
+                    HeightRequest="400">
+
+                <VerticalStackLayout Spacing="20"
+                                     VerticalOptions="Center">
+                    <Label FontSize="30">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Hemos cancelado su turno debido al tiempo de espera." />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Image Source="sad.png" />
+                    <Button BackgroundColor="#ff0000"
+                            Text="Volver a inicio"
+                            Command="{Binding RegresarCommand}"
+                            Margin="20,0" />
+                </VerticalStackLayout>
+            </Border>
+
+
+        </Grid>
 
     </Grid>
 </ContentPage>

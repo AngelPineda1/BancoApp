@@ -23,7 +23,7 @@ namespace CLienteMAUI.ViewModel
         private TurnoDto turno = new();
 
         [ObservableProperty]
-        private string estadoTurno = "10 minutos";
+        private string estadoTurnoMensaje = "10 minutos";
         public ObservableCollection<CajasDto2> Cajas { get; set; } = [];
 
         private readonly HubConnection _hubConnection;
@@ -43,9 +43,9 @@ namespace CLienteMAUI.ViewModel
                 {
                     Turno = turnodto;
                     OnPropertyChanged(nameof(Turno));
-                    
+
                     if (Turno.Proximo)
-                        EstadoTurno = "Su turno está próximo";
+                        EstadoTurnoMensaje = "Su turno está próximo";
 
                     Cajas.Clear();
                     foreach (var item in cajas)
@@ -72,7 +72,7 @@ namespace CLienteMAUI.ViewModel
 
                     if (Turno.Numero == numeroFuturo)
                     {
-                        EstadoTurno = "Su turno está próximo";
+                        EstadoTurnoMensaje = "Su turno está próximo";
                     }
 
                     Cajas.Clear();
@@ -86,21 +86,36 @@ namespace CLienteMAUI.ViewModel
             });
 
 
-            //_hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
-            //{
-            //    MainThread.BeginInvokeOnMainThread(() =>
-            //    {
-            //        if (Turno.Numero == turnoSiguiente)
-            //            EstadoTurno = "Su turno está próximo";
+            _hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (Turno.Numero == turnoSiguiente)
+                        EstadoTurnoMensaje = "Su turno está próximo";
 
-            //        Cajas.Clear();
-            //        foreach (var item in cajas)
-            //        {
-            //            item.Nombre = item.Nombre.ToUpper();
-            //            Cajas.Add(item);
-            //        }
-            //    });
-            //});
+                    Cajas.Clear();
+                    foreach (var item in cajas)
+                    {
+                        item.Nombre = item.Nombre.ToUpper();
+                        Cajas.Add(item);
+                    }
+                });
+            });
+
+
+            _hubConnection.On<TurnoDto, int>("TurnoCancelado", (turnoCancelado, idcaja) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (Turno.Numero == turnoCancelado.Numero)
+                    {
+                        Turno.Estado = EstadoTurno.Cancelado.ToString();
+                        OnPropertyChanged(nameof(Turno));
+                    }
+
+
+                });
+            });
 
             Task.Run(async () =>
             {
@@ -155,5 +170,11 @@ namespace CLienteMAUI.ViewModel
             await Shell.Current.GoToAsync($"//Gracias");
         }
 
+
+        [RelayCommand]
+        public async Task Regresar()
+        {
+            await Shell.Current.GoToAsync($"//Inicio");
+        }
     }
 }

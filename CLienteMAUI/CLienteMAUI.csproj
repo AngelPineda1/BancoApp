@@ -60,6 +60,7 @@
 	  <None Remove="Resources\Fonts\Montserrat-Regular.ttf" />
 	  <None Remove="Resources\Images\carita.png" />
 	  <None Remove="Resources\Images\gracias.png" />
+	  <None Remove="Resources\Images\sad.png" />
 	</ItemGroup>
 
 	<ItemGroup>

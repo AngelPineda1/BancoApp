@@ -1,1 +1,53 @@
-﻿<h1>Admin</h1>
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<section class="contenido">
+
+    <a href="~/Admin/Cajeros/Agregar" class="Agregar">Agregar Cajas</a>
+    <div class="estadisticas">
+        <div class="estadisticas__container">
+            <label>Turnos Completados</label>
+            <span>5</span>
+        </div>
+        <div class="estadisticas__container">
+            <label>Turnos Completados</label>
+            <span>5</span>
+        </div>
+        <div class="estadisticas__container">
+            <label>Turnos Completados</label>
+            <span>5</span>
+        </div>
+    </div>
+<table>
+    <thead>
+        <tr>
+            <th>Turno</th>
+            <th>Caja</th>
+            <th>Estado</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Término</th>
+            <th>Tiempo Tardado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>001</td>
+            <td>Completado</td>
+            <td>2024-06-18 10:00</td>
+            <td>2024-06-18 10:15</td>
+            <td>15 minutos</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>002</td>
+            <td>En Proceso</td>
+            <td>2024-06-18 10:15</td>
+            <td>2024-06-18 10:30</td>
+            <td>15 minutos</td>
+        </tr>
+        <!-- Más filas pueden añadirse aquí -->
+    </tbody>
+</table>
+</section>

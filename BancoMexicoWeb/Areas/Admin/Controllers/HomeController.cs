@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BancoMexicoWeb.Areas.Admin.Controllers
 {
-[Area("Admin")]
-    
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class HomeController : Controller
     {
         public IActionResult Index()

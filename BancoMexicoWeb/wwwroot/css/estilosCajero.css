@@ -12,7 +12,7 @@ body {
     width: 100%;
     background-color: #54A0F0;
     color: white;
-    height:100px;
+    height: 100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,6 +40,8 @@ body {
     max-width: 400px;
     width: 100%;
     margin-top: 50px;
+    display:flex;
+    flex-direction: column;
 }
 
 h1 {
@@ -60,17 +62,18 @@ h1 {
     justify-content: space-around;
 }
 
-#cancelar{
+#cancelar {
     border: 2px solid #FF0000;
-    background-color:#fff;
+    background-color: #fff;
     color: #FF0000;
+    display:none;
 }
 
-    #cancelar:hover {
-        background-color: #FF0000;
-        color: #fff;
-        transform: scale(1.05);
-    }
+#cancelar:hover {
+    background-color: #FF0000;
+    color: #fff;
+    transform: scale(1.05);
+}
 
 button {
     padding: 15px 25px;
@@ -99,9 +102,15 @@ button {
     color: #fff;
 }
 
-#atendiendo:not(:disabled):hover {
+#atendiendo:hover {
     background-color: #295D99;
     transform: scale(1.05);
 }
 
 
+#esperando {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}

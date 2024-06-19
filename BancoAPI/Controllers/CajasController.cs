@@ -57,6 +57,7 @@ namespace BancoAPI.Controllers
                         Contrasena = dto.Contrasena,
                         Estado = (int)EstadoCaja.Activa
                     };
+                    cajas.Username = cajas.Username.ToUpper();
                     _cajasRepository.Insert(cajas);
                     return Created();
                 }

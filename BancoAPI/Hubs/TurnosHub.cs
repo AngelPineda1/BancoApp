@@ -97,7 +97,7 @@ namespace BancoAPI.Hubs
             if (cajaExite == null)
                 return;
 
-            cajaExite.ConnectionId ??= Context.ConnectionId;
+            cajaExite.ConnectionId = Context.ConnectionId;
 
             var turnoSiguiente = _turnoRepository.GetAll()
                 .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
@@ -191,49 +191,50 @@ namespace BancoAPI.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            //var caja = _cajasRepository.GetAll()
-            //    .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            var caja = _cajasRepository.GetAll()
+                .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            //int turnoSiguiente = 0;
+            var turnoCancelado = _turnoRepository.GetAll()
+                .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            //var turno = _turnoRepository.GetAll().FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            if (caja != null)
+            {
+                caja.Estado = (int)EstadoCaja.Inactiva;
+                caja.ConnectionId = null;
+                var turnoAtendiendo = caja.Turno.FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString());
 
-            //if (caja != null)
+                if (turnoAtendiendo != null)
+                {
+                    turnoAtendiendo.Estado = EstadoTurno.Atendido.ToString();
+                    turnoAtendiendo.FechaTermino = DateTime.Now;
+                    _turnoRepository.Update(turnoAtendiendo);
+                }
+                _cajasRepository.Update(caja);
+
+
+            }
+            else if (turnoCancelado != null)
+            {
+                if (turnoCancelado.Estado == EstadoTurno.Pendiente.ToString())
+                    _turnoRepository.Delete(turnoCancelado);
+            }
+
+            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
+            {
+                Estado = x.Estado,
+                Nombre = x.Nombre,
+                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
+            }).ToList();
+
+
+            //var turnosCancelados = _turnoRepository.GetAll().Where(x => x.Estado == EstadoTurno.Cancelado.ToString()).ToList();
+            //foreach (var item in turnosCancelados)
             //{
-            //    caja.Estado = (int)EstadoCaja.Inactiva;
-            //    caja.ConnectionId = null;
-            //    var turnoAtendiendo = caja.Turno.FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString());
-
-            //    if (turnoAtendiendo != null)
-            //    {
-            //        turnoAtendiendo.Estado = EstadoTurno.Atendido.ToString();
-            //        turnoAtendiendo.FechaTermino = DateTime.Now;
-            //        _turnoRepository.Update(turnoAtendiendo);
-            //    }
-            //    _cajasRepository.Update(caja);
-
+            //    _turnoRepository.Delete(item);
             //}
-            //else if (turno != null)
-            //{
-            //    if (turno.Estado != EstadoTurno.Atendiendo.ToString() && turno.Estado != EstadoTurno.Atendido.ToString())
-            //        _turnoRepository.Delete(turno);
 
 
-            //    turnoSiguiente = _turnoRepository.GetAll()
-            //       .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
-            //       .OrderBy(x => x.Numero)
-            //       .FirstOrDefault()?.Numero ?? 0;
-            //}
-
-            //var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-            //{
-            //    Estado = x.Estado,
-            //    Nombre = x.Nombre,
-            //    NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-            //}).ToList();
-
-
-            //await Clients.All.SendAsync("CajaDesconectada", cajas, turnoSiguiente);
+            await Clients.All.SendAsync("CajaDesconectada", cajas);
 
 
             await base.OnDisconnectedAsync(exception);
