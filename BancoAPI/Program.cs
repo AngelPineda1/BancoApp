@@ -19,6 +19,7 @@ builder.Services.AddTransient <UsuariosRepository>();
 builder.Services.AddTransient<CajasRepository >();
 builder.Services.AddTransient<CajasValidator>();
 builder.Services.AddTransient<TurnosRepository >();
+builder.Services.AddTransient<UsuariosValidator>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

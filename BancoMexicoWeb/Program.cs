@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMvc();
 builder.Services.AddTransient<TurnoService>();
 builder.Services.AddTransient<CajasValidator>();
+builder.Services.AddTransient<UsuariosValidator>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
     {
         options.LoginPath = "/Home/Login";
