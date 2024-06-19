@@ -80,18 +80,16 @@ namespace BancoAPI.Controllers
                     var results = _cajasValidator.Validate(dto);
                     if (results.IsValid)
                     {
-                        if (encrypter.IsPasswordChanged(caja.Contrasena, dto.Contrasena))
-                        {
-                            dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
+                        //if (encrypter.IsPasswordChanged(caja.Contrasena, dto.Contrasena))
+                        //{
+                        //    dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
                             
-                        }
+                        //}
                         Cajas cajas = new Cajas()
                         {
-
+                            Id=dto.Id,
                             Nombre = dto.Nombre,
                             Username = dto.Username,
-                            Contrasena = dto.Contrasena,
-                            Estado = dto.Estado
                         };
                         _cajasRepository.Update(cajas);
                         return Ok();

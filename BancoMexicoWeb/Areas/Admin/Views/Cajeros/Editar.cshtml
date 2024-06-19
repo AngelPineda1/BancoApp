@@ -1,0 +1,18 @@
+﻿@model BancoMexicoWeb.Areas.Admin.Models.ActualizarCajaViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<form asp-action="Editar" method="post">
+    <div class="form-group">
+        <input type="hidden" asp-for="Id" />
+        <label asp-for="Nombre"></label>
+        <input asp-for="Nombre" class="form-control" />
+
+    </div>
+   
+
+    <div class="form-group">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control" />
+    </div>
+    <span>@Html.ValidationSummary(true)</span>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>    
