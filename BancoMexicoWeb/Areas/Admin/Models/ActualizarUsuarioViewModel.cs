@@ -6,7 +6,7 @@
 
         public string Nombre { get; set; } = null!;
 
-        public string? Contrasena { get; set; }
+        
         public string Username { get; set; } = null!;
     }
 }

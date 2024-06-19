@@ -1,23 +1,36 @@
 ﻿@model BancoMexicoWeb.Areas.Admin.Models.AgregarUsuarioViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<form asp-action="Agregar" method="post">
-    <div class="form-group">
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/estilos.css" />
+    <title>BancoMéxico</title>
+
+</head>
+
+<body>
+    <form method="post" action="Agregar">
+        <h3>Agregar Usuario</h3>
         <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
+        <input asp-for="Nombre" class="form-control" placeholder="Escribe el Nombre"/>
+        <label for="username">Nombre de usuario:</label>
+        <input type="text" id="username" placeholder="Escribe el nombre de usuario" asp-for="Username">
 
-    </div>
-    <div class="form-group">
-        <label asp-for="Contrasena"></label>
-        <input asp-for="Contrasena" class="form-control" />
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" placeholder="Escribe la contraseña" asp-for="Contrasena">
 
-    </div>
+        <p style="margin-top:20px">@Html.ValidationSummary(true)</p>
 
-    <div class="form-group">
-        <label asp-for="Username"></label>
-        <input asp-for="Username" class="form-control" />
-    </div>
-    <span>@Html.ValidationSummary(true)</span>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+        <input type="submit" value="Agregar" />
 
+    </form>
+</body>
+
+</html>

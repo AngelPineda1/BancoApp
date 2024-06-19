@@ -1,18 +1,33 @@
 ﻿@model BancoMexicoWeb.Areas.Admin.Models.ActualizarCajaViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-<form asp-action="Editar" method="post">
-    <div class="form-group">
+   
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/estilos.css" />
+    <title>BancoMéxico</title>
+
+</head>
+
+<body>
+    <form method="post" asp-action="Editar">
+        <h3>Editar Cajero</h3>
         <input type="hidden" asp-for="Id" />
         <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
+        <input asp-for="Nombre" class="form-control" placeholder="Escribe el nombre" />
+        <label for="username">Nombre de usuario:</label>
+        <input type="text" id="username" placeholder="Escribe el nombre de usuario" asp-for="Username">
 
-    </div>
-   
 
-    <div class="form-group">
-        <label asp-for="Username"></label>
-        <input asp-for="Username" class="form-control" />
-    </div>
-    <span>@Html.ValidationSummary(true)</span>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>    
+        <p style="margin-top:20px">@Html.ValidationSummary(true)</p>
+
+        <input type="submit" value="Agregar" />
+
+    </form>
+</body>
+
+</html>
