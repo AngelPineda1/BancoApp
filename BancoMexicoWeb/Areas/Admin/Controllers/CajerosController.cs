@@ -183,5 +183,24 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
             return View();
         }
 
+
+
+        [HttpGet("admin/cajeros/eliminar/{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            _httpClient.BaseAddress = new Uri("https://bancomexicoapi.websitos256.com/");
+            var response = await _httpClient.DeleteAsync($"api/Cajas/{id} ");
+            if(response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Error al eliminar la actividad");
+                return View(); // Muestra la vista actual con el mensaje de error
+            }
+           
+        }
+
     }
 }
