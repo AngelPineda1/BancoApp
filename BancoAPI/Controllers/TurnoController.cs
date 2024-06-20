@@ -1,4 +1,5 @@
-﻿using BancoAPI.Models.Entities;
+﻿using BancoAPI.Models.Dtos;
+using BancoAPI.Models.Entities;
 using BancoAPI.Models.Enum;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,18 @@ namespace BancoAPI.Controllers
             _cajasRepository = cajasRepository;
         }
 
+
+        [HttpGet]
+        public IActionResult GetEstats()
+        {
+            var datos = new TurnosEstats()
+            {
+                Atendidos = _turnosRepositry.GetAtendidos(),
+                Cancelados = _turnosRepositry.GetCancelados(),
+                TurnosInf=_turnosRepositry.GetTurnosInfo()
+            };
+            return Ok(datos);
+        }
         //[HttpPost]
         //public IActionResult Post()
         //{
