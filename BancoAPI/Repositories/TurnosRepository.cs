@@ -1,6 +1,7 @@
 ﻿using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BancoAPI.Repositories
 {
@@ -9,20 +10,23 @@ namespace BancoAPI.Repositories
         private WebsitosBancoMexicoContext context = ctx;
 
 
-        public int GetAtendidos()
-        {
-            return context.Turno.Where(x=>x.Estado=="Atendido").Count();
-        }
+        //public int GetAtendidos()
+        //{
+        //    return context.Turno.Where(x=>x.Estado=="Atendido").Count();
+        //}
 
-        public int GetCancelados()
-        {
-            return context.Turno.Where(x => x.Estado == "Cancelado").Count();
+        //public int GetCancelados()
+        //{
+        //    return context.Turno.Where(x => x.Estado == "Cancelado").Count();
 
-        }
+        //}
 
-        public IEnumerable<Turnos> GetTurnosInfo()
+        public TurnosEstats GetTurnosInfo()
         {
-            return context.Turno.Include(x => x.IdCajaNavigation).Select(x => new Turnos()
+            var turnos=new TurnosEstats();
+            turnos.Atendidos= context.Turno.Where(x => x.Estado == "Atendido").Count();
+            turnos.Cancelados= context.Turno.Where(x => x.Estado == "Cancelado").Count();
+            turnos.TurnosInf = context.Turno.Include(x => x.IdCajaNavigation).Select(x => new Turnos()
             {
                 Id = x.Id,
                 IdCaja = x.IdCaja,
@@ -39,6 +43,8 @@ namespace BancoAPI.Repositories
 
                 }
             });
+           
+            return turnos;
         }
     }
 }

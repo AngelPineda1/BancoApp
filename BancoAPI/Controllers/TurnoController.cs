@@ -24,12 +24,8 @@ namespace BancoAPI.Controllers
         [HttpGet]
         public IActionResult GetEstats()
         {
-            var datos = new TurnosEstats()
-            {
-                Atendidos = _turnosRepositry.GetAtendidos(),
-                Cancelados = _turnosRepositry.GetCancelados(),
-                TurnosInf=_turnosRepositry.GetTurnosInfo()
-            };
+            var datos = _turnosRepositry.GetTurnosInfo();
+           
             return Ok(datos);
         }
         //[HttpPost]
