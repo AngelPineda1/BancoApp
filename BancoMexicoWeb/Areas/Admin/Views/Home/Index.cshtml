@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BancoMexicoWeb.Areas.Admin.Models.TurnosEstatsViewModel
+@{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
@@ -7,17 +8,14 @@
     <a href="~/Admin/Cajeros/Agregar" class="Agregar">Agregar Cajas</a>
     <div class="estadisticas">
         <div class="estadisticas__container">
-            <label>Turnos Completados</label>
-            <span>5</span>
+            <label>Turnos Atendidos</label>
+            <span>@Model.Atendidos</span>
         </div>
         <div class="estadisticas__container">
-            <label>Turnos Completados</label>
-            <span>5</span>
+            <label>Turnos Cancelados</label>
+            <span>@Model.Cancelados</span>
         </div>
-        <div class="estadisticas__container">
-            <label>Turnos Completados</label>
-            <span>5</span>
-        </div>
+       
     </div>
 <table>
     <thead>
@@ -31,22 +29,19 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>1</td>
-            <td>001</td>
-            <td>Completado</td>
-            <td>2024-06-18 10:00</td>
-            <td>2024-06-18 10:15</td>
-            <td>15 minutos</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>002</td>
-            <td>En Proceso</td>
-            <td>2024-06-18 10:15</td>
-            <td>2024-06-18 10:30</td>
-            <td>15 minutos</td>
-        </tr>
+            @foreach(var item in Model.TurnosInf)
+            {
+                
+                <tr>
+                <td>@item.Numero</td>
+                <td>@item.CajaNombre</td>
+                <td>@item.Estado</td>
+                <td>@item.FechaAtencion?.ToString("dd/MMMM/yyyy hh:mm:ss")</td>
+                    <td>@item.FechaTermino?.ToString("dd/MMMM/yyyy hh:mm:ss")</td>
+                <td>@item.Tiempo.Minutos minutos @item.Tiempo.Segundos segundos</td>
+            </tr>
+            }
+       
         <!-- Más filas pueden añadirse aquí -->
     </tbody>
 </table>

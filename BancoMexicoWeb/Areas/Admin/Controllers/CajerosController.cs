@@ -36,6 +36,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                 var cajas = JsonSerializer.Deserialize<IEnumerable<Cajas>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if(cajas != null)
                 {
+                    cajas.ToList();
                     model.Cajas = cajas;
                     return View(model);
                 }
