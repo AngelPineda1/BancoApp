@@ -156,6 +156,9 @@ namespace BancoAPI.Hubs
 
 
             await Clients.All.SendAsync("TurnoAtendido", turnoDto, cajas, cajaExite.Id, turnoFuturo?.Numero ?? 0);
+            EstadisticasHub estadisticasHub=new(turnosRepository);
+            await estadisticasHub.Estadisticas();
+
 
         }
 
@@ -185,6 +188,9 @@ namespace BancoAPI.Hubs
             };
 
             await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id);
+
+            EstadisticasHub estadisticasHub = new(turnosRepository);
+            await estadisticasHub.Estadisticas();
         }
 
 

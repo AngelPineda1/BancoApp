@@ -67,6 +67,8 @@ app.UseCors("MyPolicy");
 app.MapControllers();
 
 app.MapHub<TurnosHub>("/turnosHub");
+app.MapHub<EstadisticasHub>("/estadisticasHub");
+
 
 
 app.Run();
