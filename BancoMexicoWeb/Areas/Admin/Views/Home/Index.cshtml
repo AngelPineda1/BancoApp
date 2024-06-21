@@ -4,45 +4,42 @@
 }
 
 <section class="contenido">
-
     <a href="~/Admin/Cajeros/Agregar" class="Agregar">Agregar Cajas</a>
     <div class="estadisticas">
         <div class="estadisticas__container">
             <label>Turnos Atendidos</label>
-            <span>@Model.Atendidos</span>
+            <span id="turnosAtendidos">@* @Model.Atendidos *@</span>
         </div>
         <div class="estadisticas__container">
             <label>Turnos Cancelados</label>
-            <span>@Model.Cancelados</span>
+            <span id="turnosCancelados">@* @Model.Cancelados *@</span>
         </div>
-       
     </div>
-<table>
-    <thead>
-        <tr>
-            <th>Turno</th>
-            <th>Caja</th>
-            <th>Estado</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Término</th>
-            <th>Tiempo Tardado</th>
-        </tr>
-    </thead>
-    <tbody>
-            @foreach(var item in Model.TurnosInf)
-            {
-                
-                <tr>
-                <td>@item.Numero</td>
-                <td>@item.CajaNombre</td>
-                <td>@item.Estado</td>
-                <td>@item.FechaAtencion?.ToString("dd/MMMM/yyyy hh:mm:ss")</td>
-                    <td>@item.FechaTermino?.ToString("dd/MMMM/yyyy hh:mm:ss")</td>
-                <td>@item.Tiempo.Minutos minutos @item.Tiempo.Segundos segundos</td>
+    <table>
+        <thead>
+            <tr>
+                <th>Turno</th>
+                <th>Caja</th>
+                <th>Estado</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Término</th>
+                <th>Tiempo Tardado</th>
             </tr>
-            }
-       
-        <!-- Más filas pueden añadirse aquí -->
-    </tbody>
-</table>
+        </thead>
+        <tbody id="turnosTabla">
+           @*  @foreach (var item in Model.TurnosInf)
+            {
+                <tr>
+                    <td>@item.Numero</td>
+                    <td>@item.CajaNombre</td>
+                    <td>@item.Estado</td>
+                    <td>@item.FechaAtencion?.ToString("dd/MM/yyyy hh:mm:ss")</td>
+                    <td>@item.FechaTermino?.ToString("dd/MM/yyyy hh:mm:ss")</td>
+                    <td>@item.Tiempo.Minutos minutos @item.Tiempo.Segundos segundos</td>
+                </tr>
+            } *@
+        </tbody>
+    </table>
 </section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.18/signalr.min.js"></script>
+<script src="~/js/AdminMain.js"></script>
