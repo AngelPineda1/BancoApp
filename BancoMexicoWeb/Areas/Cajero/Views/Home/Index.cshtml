@@ -24,7 +24,12 @@
             <button id="cancelar">Cancelar Turno</button>
             @* <button id="siguiente" onclick="siguiente()" disabled>Siguiente</button> *@
         </div>
-        <label id="esperando">Esperando cliente...</label>
+        <div id="esperando">
+            <label>Esperando cliente</label>
+            <div id="loading-bar-spinner" class="spinner">
+                <div class="spinner-icon"></div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>

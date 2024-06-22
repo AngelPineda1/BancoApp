@@ -22,7 +22,7 @@ namespace BancoMexicoWeb.Controllers
 
 
         [HttpGet]
-        
+
         public IActionResult Login()
         {
             return View();
@@ -46,52 +46,37 @@ namespace BancoMexicoWeb.Controllers
             dto.UserName = dto.UserName.ToUpper().Trim();
             var token = await turnoService.Login(dto);
 
-            if (!string.IsNullOrWhiteSpace(token))
-            {
+            if (string.IsNullOrWhiteSpace(token))
+                return View(dto);
 
-                var handler = new JwtSecurityTokenHandler();
-                var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+            var jsonToken = new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
 
-                var claims = jsonToken?.Claims.Select(x => new Claim(x.Type, x.Value)).ToList();
+            var roleClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+            var nameClaim = jsonToken?.Claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
+            var nameid = jsonToken?.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+            var email = jsonToken?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
-                if (claims != null)
-                {
-                    var roleClaim = claims.FirstOrDefault(c => c.Type == "role")?.Value;
-                    var nameClaim = claims.FirstOrDefault(c => c.Type == "unique_name")?.Value;
-                    var nameid = claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
-                    var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
-
-                    var claimsLista = new List<Claim>(){
-                        new Claim(ClaimTypes.Name, nameClaim),
-                        new Claim(ClaimTypes.Role, roleClaim),
-                        new Claim(ClaimTypes.NameIdentifier, nameid),
-                        new Claim(ClaimTypes.Email, email)
+            var claimsLista = new List<Claim>(){
+                        new (ClaimTypes.Name, nameClaim??""),
+                        new (ClaimTypes.Role, roleClaim??""),
+                        new (ClaimTypes.NameIdentifier, nameid??""),
+                        new (ClaimTypes.Email, email??"")
                     };
 
 
-                    var claimsIdentity = new ClaimsIdentity(claimsLista, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsIdentity = new ClaimsIdentity(claimsLista, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity)
-                      , new AuthenticationProperties()
-                      {
-                          IsPersistent = true,
-                          AllowRefresh = true
-                      });
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity)
+              , new AuthenticationProperties()
+              {
+                  IsPersistent = true,
+                  AllowRefresh = true
+              });
 
-                    if (!HttpContext.User.Identity.IsAuthenticated)
-                    {
-                        ModelState.AddModelError("", "Error al crear la cookie de autenticación");
-                        return View(dto);
-                    }
-
-                    var a = HttpContext.User.Identities.Select(x => x.Claims.Where(y => y.Type == ClaimTypes.Name)).ToList();
-
-                    if (roleClaim == "Admin")
-                        return RedirectToAction("Index", "Home", new { area = "Admin" });
-                    else if (roleClaim == "Cajero")
-                        return RedirectToAction("Index", "Home", new { area = "Cajero" });
-                }
-            }
+            if (roleClaim == "Admin")
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            else if (roleClaim == "Cajero")
+                return RedirectToAction("Index", "Home", new { area = "Cajero" });
 
             return View(dto);
 

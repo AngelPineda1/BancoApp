@@ -9,11 +9,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BancoAPI.Hubs
 {
-    public class TurnosHub(TurnosRepository turnosRepository, CajasRepository cajasRepository) : Hub
+    public class TurnosHub(TurnosRepository _turnoRepository, CajasRepository _cajasRepository) : Hub
     {
-        private readonly TurnosRepository _turnoRepository = turnosRepository;
-        private readonly CajasRepository _cajasRepository = cajasRepository;
-
         public async Task GenerarTurno()
         {
             var connectionId = Context.ConnectionId;
@@ -175,25 +172,20 @@ namespace BancoAPI.Hubs
             if (turnoCancelar == null)
                 return;
 
-            turnoCancelar.Estado = EstadoTurno.Cancelado.ToString();
-            turnoCancelar.FechaTermino = DateTime.Now;
-
-            _turnoRepository.Update(turnoCancelar);
-
             var turnoCancelarDto = new TurnoDto()
             {
                 Numero = turnoCancelar.Numero,
-                Estado = turnoCancelar.Estado,
+                Estado = EstadoTurno.Cancelado.ToString(),
                 IdCaja = turnoCancelar.IdCaja,
             };
+
+            _turnoRepository.Delete(turnoCancelar);
 
             await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id);
 
             EstadisticasHub estadisticasHub = new(turnosRepository);
             await estadisticasHub.Estadisticas();
         }
-
-
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
@@ -232,23 +224,10 @@ namespace BancoAPI.Hubs
                 NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
             }).ToList();
 
-
-            //var turnosCancelados = _turnoRepository.GetAll().Where(x => x.Estado == EstadoTurno.Cancelado.ToString()).ToList();
-            //foreach (var item in turnosCancelados)
-            //{
-            //    _turnoRepository.Delete(item);
-            //}
-
-
             await Clients.All.SendAsync("CajaDesconectada", cajas);
-
 
             await base.OnDisconnectedAsync(exception);
         }
-
-
-
-
 
 
     }
