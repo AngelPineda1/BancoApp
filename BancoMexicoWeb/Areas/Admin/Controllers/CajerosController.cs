@@ -140,7 +140,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                         _httpClient.PutAsync("/api/Cajas", content);
                     if (response2.IsSuccessStatusCode)
                     {
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
                     }
                     return View(vm);
 
@@ -178,7 +178,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
             var response = await _httpClient.DeleteAsync($"api/Cajas/{id} ");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
             }
             else
             {
