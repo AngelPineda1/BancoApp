@@ -140,8 +140,13 @@ namespace CLienteMAUI.ViewModel
                 });
             });
 
-        }
 
+            Task.Run(async () =>
+            {
+                await _hubConnection.StartAsync();
+            });
+
+        }
 
 
 
@@ -159,7 +164,6 @@ namespace CLienteMAUI.ViewModel
                     return;
                 }
 
-                await _hubConnection.StartAsync();
 
 
                 if (_hubConnection.State != HubConnectionState.Connected)

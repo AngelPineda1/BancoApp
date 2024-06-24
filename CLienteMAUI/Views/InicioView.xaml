@@ -8,41 +8,49 @@
              x:DataType="vm:TurnoViewModel"
              Title="InicioView">
 
-    <Grid>
+    <!--<Grid>-->
+
+    <VerticalStackLayout VerticalOptions="Center"
+                         Spacing="20">
         <Label Text="BancoMéxico"
                FontSize="40"
                VerticalOptions="Center"
                HorizontalOptions="Center" />
 
-        <Label Text="¿Que tipo de atención necesitas?"
-               FontSize="Subtitle"
+        <Label Text="Presiona el botón para generar su turno"
+               FontSize="Large"
+               Margin="20,0"
                VerticalTextAlignment="Center"
                HorizontalTextAlignment="Center" />
 
-        <Button Text="Pedir turno"
-                WidthRequest="300"
-                FontSize="Subtitle"
-                Padding="0,20"
-                Clicked="Button_Clicked"
-                BackgroundColor="{StaticResource colorPrimario}">
 
-
-        
-
-            <!--<Button Text="Pedir turno"
+        <Button Text="Generar turno"
                 WidthRequest="300"
                 FontSize="Subtitle"
                 Padding="0,20"
                 Command="{Binding GenerarTurnoCommand}"
-                CommandParameter="Turno"
-                BackgroundColor="{StaticResource colorPrimario}">-->
-        </Button>
+                BackgroundColor="{StaticResource colorPrimario}" />
 
 
-        
-        
         <ActivityIndicator IsRunning="{Binding IsLoading}"
                            Margin="0,20,0,0"
                            Color="{StaticResource colorPrimario}" />
-    </Grid>
+    </VerticalStackLayout>
+
+    <!--<Grid IsVisible="False" x:Name="escanearCodigo">
+            <Frame BackgroundColor="#000"
+                   Opacity=".5"
+                   CornerRadius="0"
+                   BorderColor="#000" />
+            
+            <zxing:CameraBarcodeReaderView x:Name="barcodeReader"
+                                           Grid.Row="2"
+                                           IsDetecting="False"
+                                          
+                                           WidthRequest="300"
+                                           HeightRequest="300"
+                                           BarcodesDetected="CameraBarcodeReaderView_BarcodesDetected" />
+        </Grid>-->
+
+    <!--</Grid>-->
 </ContentPage>
