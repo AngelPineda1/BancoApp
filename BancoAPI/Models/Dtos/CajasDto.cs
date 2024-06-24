@@ -11,7 +11,7 @@
         public string Username { get; set; } = null!;
     }
 
-    public class CajasUpDto:CajasDto
+    public class CajasUpDto
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = null!;
