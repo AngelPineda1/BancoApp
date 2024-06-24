@@ -6,19 +6,18 @@
              x:Class="CLienteMAUI.Views.InicioView"
              x:DataType="vm:TurnoViewModel"
              Title="InicioView">
-    
-    <VerticalStackLayout Spacing="20" VerticalOptions="Center">
-        <Label 
-            Text="BancoMéxico"
-            FontSize="40"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+
+    <VerticalStackLayout Spacing="20"
+                         VerticalOptions="Center">
+        <Label Text="BancoMéxico"
+               FontSize="40"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
 
         <Label Text="¿Que tipo de atención necesitas?"
-            
                FontSize="Subtitle"
                VerticalTextAlignment="Center"
-               HorizontalTextAlignment="Center"/>
+               HorizontalTextAlignment="Center" />
 
         <Button Text="Pedir turno"
                 WidthRequest="300"
@@ -28,5 +27,8 @@
                 CommandParameter="Turno"
                 BackgroundColor="{StaticResource colorPrimario}">
         </Button>
+        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           Margin="0,20,0,0"
+                           Color="{StaticResource colorPrimario}" />
     </VerticalStackLayout>
 </ContentPage>

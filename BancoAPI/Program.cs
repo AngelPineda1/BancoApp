@@ -1,3 +1,4 @@
+using BancoAPI.Helpers;
 using BancoAPI.Hubs;
 using BancoAPI.Models.Entities;
 using BancoAPI.Models.Validators;
@@ -44,6 +45,11 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
+
+builder.Services.AddTransient<TurnosHub>();
+builder.Services.AddTransient<CajasHub>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -67,6 +73,7 @@ app.UseCors("MyPolicy");
 app.MapControllers();
 
 app.MapHub<TurnosHub>("/turnosHub");
+app.MapHub<CajasHub>("/cajasHub");
 app.MapHub<EstadisticasHub>("/estadisticasHub");
 
 

@@ -29,6 +29,9 @@ namespace CLienteMAUI.ViewModel
         private readonly HubConnection _hubConnection;
         private readonly string _url = "https://BancoMexicoAPI.websitos256.com/turnosHub";
 
+        [ObservableProperty]
+        private bool isLoading;
+
         public TurnoViewModel()
         {
             _hubConnection = new HubConnectionBuilder()
@@ -37,7 +40,7 @@ namespace CLienteMAUI.ViewModel
                 .Build();
 
 
-            _hubConnection.On<TurnoDto, List<CajasDto2>>("TurnoGenerado", (turnodto, cajas) =>
+            _hubConnection.On<TurnoDto, List<CajasDto2>, string>("TurnoGenerado", (turnodto, cajas, estadoActual) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -46,6 +49,11 @@ namespace CLienteMAUI.ViewModel
 
                     if (Turno.Proximo)
                         EstadoTurnoMensaje = "Su turno está próximo";
+                    else
+                    {
+                        EstadoTurnoMensaje = estadoActual;
+                    }
+
 
                     Cajas.Clear();
                     foreach (var item in cajas)
@@ -59,7 +67,7 @@ namespace CLienteMAUI.ViewModel
 
 
 
-            _hubConnection.On<TurnoDto, List<CajasDto2>, int, int>("TurnoAtendido", (turno, cajas, idcaj, numeroFuturo) =>
+            _hubConnection.On<TurnoDto, List<CajasDto2>, int, int>("EstadoTurnoActual", (turno, cajas, idcaj, numeroFuturo) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -103,17 +111,46 @@ namespace CLienteMAUI.ViewModel
             });
 
 
-            _hubConnection.On<TurnoDto, int>("TurnoCancelado", (turnoCancelado, idcaja) =>
+
+
+            _hubConnection.On<List<CajasDto2>>("ActualizarCajas", (cajas) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (Turno.Numero == turnoCancelado.Numero)
+                    Cajas.Clear();
+                    foreach (var item in cajas)
                     {
-                        Turno.Estado = EstadoTurno.Cancelado.ToString();
+                        item.Nombre = item.Nombre.ToUpper();
+                        Cajas.Add(item);
+                    }
+                });
+            });
+
+
+
+            _hubConnection.On<int>("TurnoCancelado", (turnoSiguiente) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (Turno.Numero == turnoSiguiente)
+                        EstadoTurnoMensaje = "Su turno está próximo";
+                });
+            });
+
+            _hubConnection.On<TurnoDto, int, int>("TurnoCanceladoCaja", (turnodto, idcaja, turnoSiguiente) =>
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if(Turno.Numero == turnodto.Numero)
+                    {
+                        Turno.Estado = turnodto.Estado;
+                        Turno.CajaNombre = turnodto.CajaNombre;
                         OnPropertyChanged(nameof(Turno));
                     }
 
 
+                    if (Turno.Numero == turnoSiguiente)
+                        EstadoTurnoMensaje = "Su turno está próximo";
                 });
             });
 
@@ -121,7 +158,6 @@ namespace CLienteMAUI.ViewModel
             {
                 await _hubConnection.StartAsync();
             });
-
         }
 
 
@@ -132,31 +168,34 @@ namespace CLienteMAUI.ViewModel
         {
             try
             {
+                IsLoading = true;
 
                 if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
                 {
                     await MostrarToast("No hay conexión a internet");
+                    IsLoading = false;
                     return;
                 }
 
+
                 if (_hubConnection.State != HubConnectionState.Connected)
                 {
-                    await MostrarToast("No se pudo conectar al servidor");
-                    return;
+                    await _hubConnection.StartAsync();
                 }
 
                 await _hubConnection.InvokeAsync("GenerarTurno");
 
                 await Shell.Current.GoToAsync($"//{vista}");
 
+                IsLoading = false;
+
             }
             catch (Exception ex)
             {
+                IsLoading = false;
                 await MostrarToast(ex.Message);
             }
         }
-
-
 
         private async Task MostrarToast(string mensaje)
         {
@@ -172,9 +211,36 @@ namespace CLienteMAUI.ViewModel
 
 
         [RelayCommand]
+        public async Task CancelarTurno()
+        {
+            try
+            {
+                var confirmacion = await Shell.Current.DisplayAlert("Cancelar turno", "¿Está seguro de cancelar su turno?", "Sí", "No");
+                if (confirmacion)
+                {
+                    await _hubConnection.InvokeAsync("CancelarTurno", Turno.Id);
+                    await Shell.Current.GoToAsync($"//Inicio");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarToast(ex.Message);
+            }
+        }
+
+
+        [RelayCommand]
         public async Task Regresar()
         {
-            await Shell.Current.GoToAsync($"//Inicio");
+            try
+            {
+                await _hubConnection.StopAsync();
+                await Shell.Current.GoToAsync($"//Inicio");
+            }
+            catch(Exception ex)
+            {
+                await MostrarToast(ex.Message);
+            }
         }
     }
 }

@@ -7,37 +7,32 @@
     <a href="~/Admin/Cajeros/Agregar" class="Agregar">Agregar Cajas</a>
     <div class="estadisticas">
         <div class="estadisticas__container">
-            <label>Turnos Atendidos</label>
-            <span id="turnosAtendidos">@* @Model.Atendidos *@</span>
+            <label>Turnos atendidos hoy</label>
+            <span id="turnosAtendidos">0</span>
         </div>
         <div class="estadisticas__container">
-            <label>Turnos Cancelados</label>
-            <span id="turnosCancelados">@* @Model.Cancelados *@</span>
+            <label>Turnos cancelados hoy</label>
+            <span id="turnosCancelados">0</span>
+        </div>
+        <div class="estadisticas__container">
+            <label>Turnos en espera</label>
+            <span id="turnosEspera">0</span>
+        </div>
+        <div class="estadisticas__container">
+            <label>Promedio de tiempo de espera</label>
+            <span id="promedioEspera">0 minutos</span>
         </div>
     </div>
-    <table>
+    <table id="tabla">
         <thead>
             <tr>
-                <th>Turno</th>
                 <th>Caja</th>
                 <th>Estado</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Término</th>
-                <th>Tiempo Tardado</th>
+                <th>Turno actual</th>
+                <th>Opciones</th>
             </tr>
         </thead>
-        <tbody id="turnosTabla">
-           @*  @foreach (var item in Model.TurnosInf)
-            {
-                <tr>
-                    <td>@item.Numero</td>
-                    <td>@item.CajaNombre</td>
-                    <td>@item.Estado</td>
-                    <td>@item.FechaAtencion?.ToString("dd/MM/yyyy hh:mm:ss")</td>
-                    <td>@item.FechaTermino?.ToString("dd/MM/yyyy hh:mm:ss")</td>
-                    <td>@item.Tiempo.Minutos minutos @item.Tiempo.Segundos segundos</td>
-                </tr>
-            } *@
+        <tbody>
         </tbody>
     </table>
 </section>

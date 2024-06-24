@@ -9,7 +9,7 @@ header {
     background-color: #54A0F0;
     color: white;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     padding: 1em;
 }

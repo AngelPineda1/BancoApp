@@ -6,16 +6,27 @@ using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Enum;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using BancoAPI.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BancoAPI.Hubs
 {
-    public class TurnosHub(TurnosRepository _turnoRepository, CajasRepository _cajasRepository) : Hub
+    public class TurnosHub : Hub
     {
+        private readonly TurnosRepository _turnoRepository;
+        private readonly CajasRepository _cajasRepository;
+        private readonly IHubContext<CajasHub> _cajasHub;
+        private readonly IHubContext<EstadisticasHub> _estadisticasHub;
+        public TurnosHub(TurnosRepository turnoRepository, CajasRepository cajasRepository, IHubContext<CajasHub> cajasHub, IHubContext<EstadisticasHub> estadisticasHub)
+        {
+            _turnoRepository = turnoRepository;
+            _cajasRepository = cajasRepository;
+            _cajasHub = cajasHub;
+            _estadisticasHub = estadisticasHub;
+        }
         public async Task GenerarTurno()
         {
             var connectionId = Context.ConnectionId;
-
-            string cajaConnectionId = "";
 
             var turnos = _turnoRepository.GetAll();
 
@@ -40,195 +51,137 @@ namespace BancoAPI.Hubs
             if (turno.Numero == (numeroProximo + 1))
                 turno.Proximo = true;
 
-            var cajasDisponibles = _cajasRepository.GetAll().Where(x => x.Estado == (int)EstadoCaja.Activa);
+
+            turno.Estado = EstadoTurno.Pendiente.ToString();
 
 
-            if (!cajasDisponibles.Any())
-                turno.Estado = EstadoTurno.Pendiente.ToString();
-            else
-            {
-                var caja = cajasDisponibles.First();
-
-                turno.IdCaja = caja.Id;
-
-
-                turno.Estado = EstadoTurno.Atendiendo.ToString();
-                turno.CajaNombre = caja.Nombre.ToUpper();
-                turno.FechaAtencion = DateTime.Now;
-                caja.Estado = (int)EstadoCaja.Ocupada;
-
-                if (caja.ConnectionId != null)
-                    cajaConnectionId = caja.ConnectionId;
-
-                _cajasRepository.Update(caja);
-            }
-
-            _turnoRepository.Insert(new()
+            var turnoInsertar = new Turno()
             {
                 ConnectionId = connectionId,
                 Numero = turno.Numero,
                 Estado = turno.Estado,
                 IdCaja = turno.IdCaja,
-                FechaAtendido = turno.FechaAtencion,
-            });
-
-
-            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-            {
-                Estado = x.Estado,
-                Nombre = x.Nombre,
-                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-            }).ToList();
-
-
-
-
-            await Clients.Clients(connectionId, cajaConnectionId).SendAsync("TurnoGenerado", turno, cajas);
-        }
-
-        public async Task AtenderCliente(int idcaja)
-        {
-
-            var cajaExite = _cajasRepository.Get(idcaja);
-
-            if (cajaExite == null)
-                return;
-
-            cajaExite.ConnectionId = Context.ConnectionId;
-
-            var turnoSiguiente = _turnoRepository.GetAll()
-                .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
-                .OrderBy(x => x.Numero)
-                .FirstOrDefault();
-
-
-            var turnoFuturo = _turnoRepository.GetAll()
-               .Where(x => x.Estado == EstadoTurno.Pendiente.ToString())
-               .OrderBy(x => x.Numero)
-               .Skip(1)
-               .FirstOrDefault();
-
-
-
-            var turnoAnterior = _turnoRepository.GetAll()
-                .FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString() && x.IdCaja == idcaja);
-
-            if (turnoAnterior != null)
-            {
-                turnoAnterior.Estado = EstadoTurno.Atendido.ToString();
-                turnoAnterior.FechaTermino = DateTime.Now;
-                _turnoRepository.Update(turnoAnterior);
-            }
-
-
-            cajaExite.Estado = turnoSiguiente == null ? (int)EstadoCaja.Activa : (int)EstadoCaja.Ocupada;
-
-            if (turnoSiguiente != null)
-            {
-                turnoSiguiente.FechaAtendido = DateTime.Now;
-                turnoSiguiente.Estado = EstadoTurno.Atendiendo.ToString();
-                turnoSiguiente.IdCaja = idcaja;
-                _turnoRepository.Update(turnoSiguiente);
-            }
-
-
-            _cajasRepository.Update(cajaExite);
-
-
-            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-            {
-                Estado = x.Estado,
-                Nombre = x.Nombre,
-                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-            }).ToList();
-
-
-            var turnoDto = new TurnoDto()
-            {
-                Numero = turnoSiguiente?.Numero ?? 0,
-                Estado = turnoSiguiente?.Estado ?? EstadoTurno.Pendiente.ToString(),
-                IdCaja = turnoSiguiente?.IdCaja ?? 0,
-                CajaNombre = cajaExite.Nombre.ToUpper(),
+                FechaAtendido = turno.FechaAtencion
             };
 
+            _turnoRepository.Insert(turnoInsertar);
 
-            await Clients.All.SendAsync("TurnoAtendido", turnoDto, cajas, cajaExite.Id, turnoFuturo?.Numero ?? 0);
-            EstadisticasHub estadisticasHub=new(turnosRepository);
-            await estadisticasHub.Estadisticas();
+            turno.Id = turnoInsertar.Id;
+
+            var cajas = ObtenerCajas();
+
+            int cajasDisponibles = _cajasRepository.GetAll().Where(x => x.Estado == (int)EstadoCaja.Activa).Count();
+            string estadoActual = cajasDisponibles == 0 ? "Por el momento no hay cajas disponibles, por favor espere un momento" : "Espere un momento";
 
 
+            var cajasActivas = cajas.Where(x => x.Estado == (int)EstadoCaja.Activa);
+
+            if(cajasActivas.Count() > 0)
+                await _cajasHub.Clients.All.SendAsync("HayClientesEsperando");
+
+            await Clients.Clients(connectionId).SendAsync("TurnoGenerado", turno, cajas, estadoActual);
+            var estadiscticas = CalcularEstadisticas();
+            await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
         }
 
+ 
 
-        public async Task CancelarTurno(int idturno, int idcaja)
+        public async Task CancelarTurno(int id)
         {
-            var cajaExite = _cajasRepository.Get(idcaja);
+            var turno = _turnoRepository.Get(id);
 
-            if (cajaExite == null)
+            if(turno == null)
                 return;
 
-            var turnoCancelar = _turnoRepository.GetAll().FirstOrDefault(x => x.Numero == idturno);
+            turno.Estado = EstadoTurno.Cancelado.ToString();
+            turno.FechaTermino = DateTime.Now;
 
-            if (turnoCancelar == null)
-                return;
+            _turnoRepository.Update(turno);
 
-            var turnoCancelarDto = new TurnoDto()
-            {
-                Numero = turnoCancelar.Numero,
-                Estado = EstadoTurno.Cancelado.ToString(),
-                IdCaja = turnoCancelar.IdCaja,
-            };
 
-            _turnoRepository.Delete(turnoCancelar);
+            int numeroProximo = 0;
+            var turnoProximo = _turnoRepository.GetAll().Where(x => x.Estado == EstadoTurno.Pendiente.ToString());
 
-            await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id);
+            if(turnoProximo.Any())
+                numeroProximo = turnoProximo.Min(x => x.Numero);
 
-            EstadisticasHub estadisticasHub = new(turnosRepository);
-            await estadisticasHub.Estadisticas();
+            await Clients.All.SendAsync("TurnoCancelado", turnoProximo);
+            var estadiscticas = CalcularEstadisticas();
+            var cajas = ObtenerCajas();
+            await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
         }
+
+
+
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var caja = _cajasRepository.GetAll()
-                .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
             var turnoCancelado = _turnoRepository.GetAll()
                 .FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            if (caja != null)
-            {
-                caja.Estado = (int)EstadoCaja.Inactiva;
-                caja.ConnectionId = null;
-                var turnoAtendiendo = caja.Turno.FirstOrDefault(x => x.Estado == EstadoTurno.Atendiendo.ToString());
-
-                if (turnoAtendiendo != null)
-                {
-                    turnoAtendiendo.Estado = EstadoTurno.Atendido.ToString();
-                    turnoAtendiendo.FechaTermino = DateTime.Now;
-                    _turnoRepository.Update(turnoAtendiendo);
-                }
-                _cajasRepository.Update(caja);
-
-
-            }
-            else if (turnoCancelado != null)
+            if (turnoCancelado != null)
             {
                 if (turnoCancelado.Estado == EstadoTurno.Pendiente.ToString())
-                    _turnoRepository.Delete(turnoCancelado);
+                {
+                    turnoCancelado.Estado = EstadoTurno.Cancelado.ToString();
+                    turnoCancelado.FechaTermino = DateTime.Now;
+                    _turnoRepository.Update(turnoCancelado);
+                }
+                  
             }
-
-            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
-            {
-                Estado = x.Estado,
-                Nombre = x.Nombre,
-                NumeroActual = x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Vacía",
-            }).ToList();
-
+            var cajas = ObtenerCajas();
+            
             await Clients.All.SendAsync("CajaDesconectada", cajas);
+            var estadiscticas = CalcularEstadisticas();
+            await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
 
             await base.OnDisconnectedAsync(exception);
         }
 
+
+        public List<CajasDto2> ObtenerCajas()
+        {
+            var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
+            {
+                Estado = x.Estado,
+                Nombre = x.Nombre,
+                NumeroActual = x.Estado == (int)EstadoCaja.Inactiva ? "Cerrada"
+                 : x.Estado == (int)EstadoCaja.Activa ? "Activa"
+                 : x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Cerrada",
+            }).ToList();
+
+
+            return cajas;
+        }
+
+
+        public EstadisticasDto CalcularEstadisticas()
+        {
+            var turnosAtendidosLista = _turnoRepository.GetAll().Where(x => x.Estado == "Atendido").ToList();
+
+            int turnosPendientes = _turnoRepository.GetAll().Where(x => x.Estado == "Pendiente" && x.FechaCreacion.Value.Date == DateTime.Now.Date).Count();
+            int turnosAtendidos = _turnoRepository.GetAll().Where(x => x.Estado == "Atendido" && x.FechaAtendido.Value.Date == DateTime.Now.Date).Count();
+            int turnosCancelados = _turnoRepository.GetAll().Where(x => x.Estado == "Cancelado" && x.FechaCreacion.Value.Date == DateTime.Now.Date).Count();
+
+            double totalMinutos = 0;
+            foreach (var turno in turnosAtendidosLista)
+            {
+                var diferencia = turno.FechaAtendido - turno.FechaCreacion;
+                totalMinutos += diferencia == null ? 0 : diferencia.Value.TotalMinutes;
+            }
+
+
+            var estadisticas = new EstadisticasDto
+            {
+                TurnosAtendidos = turnosAtendidos,
+                TurnosCancelados = turnosCancelados,
+                TurnosPendientes = turnosPendientes,
+                TiempoPromedio = turnosAtendidos == 0 ? 0 : Math.Abs((int)(totalMinutos / turnosAtendidos))
+            };
+
+            return estadisticas;
+        }
 
     }
 }

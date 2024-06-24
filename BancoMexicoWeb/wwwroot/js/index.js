@@ -3,7 +3,7 @@ const $esperando = document.getElementById("esperando");
 const $botonCancelar = document.getElementById("cancelar");
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://BancoMexicoAPI.websitos256.com/turnosHub", {
+    .withUrl("https://BancoMexicoAPI.websitos256.com/cajasHub", {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets,
     })
@@ -35,12 +35,15 @@ connection.on("TurnoAtendido", function (turno, cajas, idCajaExiste, turnoFuturo
     else {
         $turno.textContent = turno.numero
         $botonCancelar.style.display = "inline-block";
-
+        $esperando.style.opacity = "0";
     }
 });
 
 
+connection.on("HayClientesEsperando", function () {
 
+    alert("Hay clientes esperando");
+});
 
 connection.on("TurnoGenerado", function (turno, cajas) {
     alert("Se conecto el cliente: " + turno.numero);
@@ -50,7 +53,7 @@ connection.on("TurnoGenerado", function (turno, cajas) {
 
 
 });
-connection.on("TurnoCancelado", function (turnoCancelado, idcajaE) {
+connection.on("TurnoCancelado", function (turnoCancelado, idcajaE, turnoproximo) {
 
     if (idCaja != idcajaE)
         return;
@@ -62,6 +65,20 @@ connection.on("TurnoCancelado", function (turnoCancelado, idcajaE) {
 
     //await Clients.All.SendAsync("TurnoCancelado", turnoCancelar, idcaja, turnoDto);
 });
+
+
+
+
+
+connection.on("OnConnected", function () {
+    connection.invoke("ActivarCaja", idCaja);
+});
+
+
+
+
+
+
 
 
 document.getElementById("atendiendo").addEventListener("click", function (event) {

@@ -1,62 +1,85 @@
-﻿
+﻿const $turnosAtendidos = document.getElementById("turnosAtendidos");
+const $turnosCancelados = document.getElementById("turnosCancelados");
+const $turnosEspera = document.getElementById("turnosEspera");
+const $promedioEspera = document.getElementById("promedioEspera");
+const $tabla = document.querySelector("#tabla tbody");
 
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("https://BancoMexicoAPI.websitos256.com/estadisticasHub", {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets,
-        })
-        .build();
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("https://BancoMexicoAPI.websitos256.com/estadisticasHub", {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
+    })
+    .build();
 
-    async function start() {
-        try {
-            await connection.start();
-            console.log("SignalR Connected.");
-        } catch (err) {
-            console.log(err);
-            setTimeout(start, 5000);
-        }
-    };
+async function start() {
+    try {
+        await connection.start();
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(err);
+        setTimeout(start, 5000);
+    }
+};
 
-    connection.on("EstadisticasActualizadas", function (turnos) {
-        actualizarEstadisticas(turnos);
-    });
 
-    start();
 
-    // Función para cargar datos iniciales de la API
-    async function cargarDatosIniciales() {
-        try {
-            const response = await fetch('https://BancoMexicoAPI.websitos256.com/api/Turno');
-            if (response.ok) {
-                const turnos = await response.json();
-                actualizarEstadisticas(turnos);
-            } else {
-                console.error('Error al obtener datos iniciales.');
-            }
-        } catch (error) {
-            console.error('Error al conectar con la API:', error);
-        }
+
+connection.on("OnConnected", function () {
+    connection.invoke("Actualizar");
+});
+
+
+
+
+connection.on("ActualizarEstadisticas", function (estadisticas, cajas) {
+
+    $promedioEspera.textContent = `${estadisticas.tiempoPromedio} minutos`;
+    $turnosAtendidos.textContent = estadisticas.turnosAtendidos;
+    $turnosCancelados.textContent = estadisticas.turnosCancelados;
+    $turnosEspera.textContent = estadisticas.turnosPendientes;
+
+    $tabla.innerHTML = "";
+    for (let i = 0; i < cajas.length; i++) {
+
+        var row = $tabla.insertRow();
+        row.insertCell().textContent = cajas[i].nombre;
+        row.insertCell().textContent = cajas[i].estado == 0 ? "Cerrada" : cajas[i].estado == 1? "Activa": "Ocupada";
+        row.insertCell().textContent = cajas[i].numeroActual;
+        row.insertCell().textContent = "";
+
     }
 
-    // Función para actualizar las estadísticas y la tabla
-    function actualizarEstadisticas(turnos) {
-        document.getElementById('turnosAtendidos').innerText = turnos.atendidos;
-        document.getElementById('turnosCancelados').innerText = turnos.cancelados;
 
-        const tabla = document.getElementById('turnosTabla');
-        tabla.innerHTML = ''; // Limpiar la tabla
+});
 
-        turnos.turnosInf.forEach(item => {
-            const row = tabla.insertRow();
-            row.insertCell(0).innerText = item.numero;
-            row.insertCell(1).innerText = item.cajaNombre;
-            row.insertCell(2).innerText = item.estado;
-            row.insertCell(3).innerText = new Date(item.fechaAtencion).toLocaleString();
-            row.insertCell(4).innerText = new Date(item.fechaTermino).toLocaleString();
-            row.insertCell(5).innerText = `${item.tiempo.minutos} minutos ${item.tiempo.segundos} segundos`;
-        });
-    }
 
-    // Cargar datos iniciales al cargar la página
-    window.onload = cargarDatosIniciales;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+connection.onclose(async () => {
+    await start();
+});
+
+// Start the connection.
+start();
