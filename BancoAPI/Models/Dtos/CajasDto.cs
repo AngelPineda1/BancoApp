@@ -13,7 +13,10 @@
 
     public class CajasUpDto:CajasDto
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        public string Nombre { get; set; } = null!;
+
+        public string Username { get; set; } = null!;
     }
 
     public class CajasDto2

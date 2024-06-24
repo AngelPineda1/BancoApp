@@ -14,11 +14,13 @@ namespace BancoAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CajasController(CajasRepository cajasRepository, CajasValidator validations, IHubContext<TurnosHub> turnoHub) : ControllerBase
+    public class CajasController(CajasRepository cajasRepository, CajasValidator validations, IHubContext<TurnosHub> turnoHub,CajasValidator2 rules) : ControllerBase
     {
         private CajasRepository _cajasRepository = cajasRepository;
         private CajasValidator _cajasValidator = validations;
         private readonly IHubContext<TurnosHub> _turnosHub = turnoHub;
+        private readonly CajasValidator2 rules = rules;
+
         [HttpGet]
         public IActionResult Get()
         {
@@ -94,7 +96,7 @@ namespace BancoAPI.Controllers
                     var encrypter = new Encrypter();
 
 
-                    var results = _cajasValidator.Validate(dto);
+                    var results = rules.Validate(dto);
                     if (results.IsValid)
                     {
                         //if (encrypter.IsPasswordChanged(caja.Contrasena, dto.Contrasena))
