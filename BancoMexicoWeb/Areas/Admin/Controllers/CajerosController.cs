@@ -131,15 +131,10 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                 {
                     _httpClient.BaseAddress = new Uri("https://bancomexicoapi.websitos256.com/");
 
-                    Cajas cajas = new Cajas()
-                    {
-                        Id = vm.Id,
-                        Nombre = vm.Nombre,
-                        Username = vm.Username,
 
-                    };
+                   
 
-                    var json = System.Text.Json.JsonSerializer.Serialize(cajas);
+                    var json = System.Text.Json.JsonSerializer.Serialize(vm);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     var response2 = await
                         _httpClient.PutAsync("/api/Cajas", content);

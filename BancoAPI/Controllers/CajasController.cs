@@ -104,11 +104,13 @@ namespace BancoAPI.Controllers
                         //    dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
 
                         //}
+                        var pass = _cajasRepository.Get(dto.Id)?.Contrasena;
                         Cajas cajas = new Cajas()
                         {
                             Id = dto.Id,
                             Nombre = dto.Nombre,
                             Username = dto.Username,
+                            Contrasena = pass,
                         };
                         _cajasRepository.Update(cajas);
                         return Ok();
