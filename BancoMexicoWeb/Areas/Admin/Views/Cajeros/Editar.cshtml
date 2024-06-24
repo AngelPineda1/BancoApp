@@ -1,20 +1,13 @@
 ﻿@model BancoMexicoWeb.Areas.Admin.Models.ActualizarCajaViewModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
    
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
 <!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/estilos.css" />
-    <title>BancoMéxico</title>
-
-</head>
-
-<body>
-    <form method="post" asp-action="Editar">
+    <form method="post" action="~/Admin/Cajeros/Editar">
         <h3>Editar Cajero</h3>
         <input type="hidden" asp-for="Id" />
         <label asp-for="Nombre"></label>
@@ -25,9 +18,6 @@
 
         <p style="margin-top:20px">@Html.ValidationSummary(true)</p>
 
-        <input type="submit" value="Agregar" />
+        <input type="submit" value="Guardar" />
 
     </form>
-</body>
-
-</html>

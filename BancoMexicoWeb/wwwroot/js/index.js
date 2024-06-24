@@ -53,7 +53,7 @@ connection.on("TurnoGenerado", function (turno, cajas) {
 
 
 });
-connection.on("TurnoCancelado", function (turnoCancelado, idcajaE, turnoproximo) {
+connection.on("TurnoCancelado", function (turnoCancelado, idcajaE) {
 
     if (idCaja != idcajaE)
         return;

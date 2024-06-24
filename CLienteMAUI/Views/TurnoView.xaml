@@ -105,7 +105,6 @@
                             <Label Text="{Binding Nombre}"
                                    TextColor="White"
                                    Grid.Column="1"
-                                   
                                    Grid.Row="1"
                                    FontSize="Title" />
                             <BoxView WidthRequest="2"
@@ -163,20 +162,21 @@
 
             <Border Background="#fff"
                     BackgroundColor="#fff"
+                    StrokeShape="RoundRectangle 5"
                     WidthRequest="300"
                     HeightRequest="400">
 
-                <VerticalStackLayout Spacing="20"
+                <VerticalStackLayout Spacing="10"
                                      VerticalOptions="Center">
-                    <Label FontSize="30">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="Por favor pase a la " />
-                                <Span Text="{Binding Turno.CajaNombre}"
-                                      TextColor="{StaticResource colorPrimario}" />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
+                    <Label FontSize="Large"
+                           Text="Por favor pase a la "
+                           FontFamily="Monse" />
+
+                    <Label Text="{Binding Turno.CajaNombre}"
+                           FontSize="40"
+                           TextColor="{StaticResource colorPrimario}"
+                           FontFamily="Monse" />
+
                     <Label FontSize="20">
                         <Label.FormattedText>
                             <FormattedString>
@@ -186,7 +186,7 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <Image Source="carita.png" />
+                    <Image Source="carita.png" Margin="0,10"/>
                     <Button BackgroundColor="{StaticResource colorPrimario}"
                             Text="Ok"
                             Command="{Binding GraciasPorSuPreferenciaCommand}"
@@ -202,7 +202,7 @@
 
 
 
-        <Grid Grid.RowSpan="3">
+        <Grid Grid.RowSpan="4">
 
             <Grid.Resources>
                 <Style TargetType="Grid">
@@ -220,24 +220,22 @@
             </Grid.Resources>
 
             <Frame Background="#000"
-                  CornerRadius="0"
+                   CornerRadius="0"
                    BorderColor="#000"
                    Opacity=".5" />
 
             <Border Background="#fff"
                     BackgroundColor="#fff"
+                    StrokeShape="RoundRectangle 5"
                     WidthRequest="300"
                     HeightRequest="400">
 
                 <VerticalStackLayout Spacing="20"
                                      VerticalOptions="Center">
-                    <Label FontSize="30">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="Hemos cancelado su turno debido al tiempo de espera." />
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
+                    <Label FontSize="Large"
+                           Margin="10,0"
+                           HorizontalTextAlignment="Center"
+                           Text="Hemos cancelado su turno, debido a la demora." />
                     <Image Source="sad.png" />
                     <Button BackgroundColor="#ff0000"
                             Text="Volver a inicio"

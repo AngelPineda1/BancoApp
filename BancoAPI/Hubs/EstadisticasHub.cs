@@ -55,6 +55,7 @@ namespace BancoAPI.Hubs
         {
             var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
             {
+                Id = x.Id,
                 Estado = x.Estado,
                 Nombre = x.Nombre,
                 NumeroActual = x.Estado == (int)EstadoCaja.Inactiva ? "Cerrada"

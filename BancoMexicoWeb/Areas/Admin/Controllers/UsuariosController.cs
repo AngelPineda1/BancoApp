@@ -69,6 +69,7 @@ namespace BancoMexicoWeb.Areas.Admin.Controllers
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await
                         _httpClient.PostAsync("/api/Usuarios", content);
+                   
                     if (response.IsSuccessStatusCode)
                     {
                         return RedirectToAction("Index");

@@ -40,12 +40,17 @@ connection.on("ActualizarEstadisticas", function (estadisticas, cajas) {
 
     $tabla.innerHTML = "";
     for (let i = 0; i < cajas.length; i++) {
+        let boton = document.getElementById("btnEliminar").cloneNode(true);
+        boton.style.display = "inline-block";
+        let td = document.createElement("td");
+        td.appendChild(boton);
 
         var row = $tabla.insertRow();
+        row.insertCell().textContent = cajas[i].id;
         row.insertCell().textContent = cajas[i].nombre;
         row.insertCell().textContent = cajas[i].estado == 0 ? "Cerrada" : cajas[i].estado == 1? "Activa": "Ocupada";
         row.insertCell().textContent = cajas[i].numeroActual;
-        row.insertCell().textContent = "";
+        row.appendChild(td);
 
     }
 
@@ -53,7 +58,27 @@ connection.on("ActualizarEstadisticas", function (estadisticas, cajas) {
 });
 
 
+function eliminarCaja(boton) {
+    let tr = boton.parentElement.parentElement;
+    let idCajaEliminar = parseInt(tr.children[0].textContent);
 
+    if (isNaN(idCajaEliminar))
+        return;
+
+    const url = `/admin/cajeros/editar/${idCajaEliminar}`;
+    window.location.href = url;
+
+
+    //fetch(url, {
+    //    method: 'GET'
+    //})
+    //    .then(response => {
+    //        console.log('Success:', response);
+    //    })
+    //    .catch(error => {
+    //        console.error('Error:', error);
+    //    });
+}
 
 
 

@@ -5,6 +5,7 @@ using BancoAPI.Models.Enum;
 using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Immutable;
 
 namespace BancoAPI.Hubs
 {
@@ -39,9 +40,17 @@ namespace BancoAPI.Hubs
 
             _cajasRepository.Update(caja);
 
+
+            int numeroProximo = 0;
+            var turnoProximo = _turnoRepository.GetAll().Where(x => x.Estado == EstadoTurno.Pendiente.ToString());
+
+            if (turnoProximo.Any())
+                numeroProximo = turnoProximo.Min(x => x.Numero);
+
             var cajas = ObtenerCajas();
 
-            await _turnosHub.Clients.All.SendAsync("ActualizarCajas", cajas);
+            await _turnosHub.Clients.All.SendAsync("ActualizarCajas", cajas, numeroProximo);
+
             var estadiscticas = CalcularEstadisticas();
             await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
         }
@@ -146,9 +155,12 @@ namespace BancoAPI.Hubs
                 numeroProximo = turnoProximo.Min(x => x.Numero);
 
 
-            await _turnosHub.Clients.All.SendAsync("TurnoCanceladoCaja", turnoCancelarDto, cajaExite.Id, turnoProximo);
-            await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id, turnoProximo);
+            await _turnosHub.Clients.All.SendAsync("TurnoCanceladoCaja", turnoCancelar.Numero, numeroProximo);
+
+            await Clients.All.SendAsync("TurnoCancelado", turnoCancelarDto, cajaExite.Id);
+
             var estadiscticas = CalcularEstadisticas();
+
             var cajas = ObtenerCajas();
             await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
         }
@@ -177,7 +189,10 @@ namespace BancoAPI.Hubs
 
                 var estadiscticas = CalcularEstadisticas();
                 await _estadisticasHub.Clients.All.SendAsync("ActualizarEstadisticas", estadiscticas, cajas);
-                await _turnosHub.Clients.All.SendAsync("ActualizarCajas", cajas);
+
+                int numeroPr = ObtenerNumeroProximo();
+
+                await _turnosHub.Clients.All.SendAsync("ActualizarCajas", cajas, numeroPr);
 
             }
             await base.OnDisconnectedAsync(exception);
@@ -187,6 +202,7 @@ namespace BancoAPI.Hubs
         {
             var cajas = _cajasRepository.GetAll().Select(x => new CajasDto2
             {
+                Id = x.Id,
                 Estado = x.Estado,
                 Nombre = x.Nombre,
                 NumeroActual = x.Estado == (int)EstadoCaja.Inactiva ? "Cerrada" 
@@ -223,7 +239,17 @@ namespace BancoAPI.Hubs
             return estadisticas;
         }
 
+        public int ObtenerNumeroProximo()
+        {
 
+            int numeroProximo = 0;
+            var turnoProximo = _turnoRepository.GetAll().Where(x => x.Estado == EstadoTurno.Pendiente.ToString());
+
+            if (turnoProximo.Any())
+                numeroProximo = turnoProximo.Min(x => x.Numero);
+
+            return numeroProximo;
+        }
 
     }
 }

@@ -40,15 +40,15 @@ namespace CLienteMAUI.ViewModel
                 .Build();
 
 
-            _hubConnection.On<TurnoDto, List<CajasDto2>, string>("TurnoGenerado", (turnodto, cajas, estadoActual) =>
+            _hubConnection.On<TurnoDto, List<CajasDto2>, string, int>("TurnoGenerado", (turnodto, cajas, estadoActual, numeroProximo) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Turno = turnodto;
                     OnPropertyChanged(nameof(Turno));
 
-                    if (Turno.Proximo)
-                        EstadoTurnoMensaje = "Su turno está próximo";
+                    if (Turno.Numero == numeroProximo)
+                        EstadoTurnoMensaje = "Espere un momento, Su turno es el próximo";
                     else
                     {
                         EstadoTurnoMensaje = estadoActual;
@@ -94,29 +94,13 @@ namespace CLienteMAUI.ViewModel
             });
 
 
-            _hubConnection.On<List<CajasDto2>, int>("CajaDesconectada", (cajas, turnoSiguiente) =>
+            _hubConnection.On<List<CajasDto2>,int>("ActualizarCajas", (cajas, numeroProximo) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (Turno.Numero == turnoSiguiente)
-                        EstadoTurnoMensaje = "Su turno está próximo";
+                    if (Turno.Numero == numeroProximo)
+                        EstadoTurnoMensaje = "Su turno es el próximo";
 
-                    Cajas.Clear();
-                    foreach (var item in cajas)
-                    {
-                        item.Nombre = item.Nombre.ToUpper();
-                        Cajas.Add(item);
-                    }
-                });
-            });
-
-
-
-
-            _hubConnection.On<List<CajasDto2>>("ActualizarCajas", (cajas) =>
-            {
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
                     Cajas.Clear();
                     foreach (var item in cajas)
                     {
@@ -133,38 +117,36 @@ namespace CLienteMAUI.ViewModel
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     if (Turno.Numero == turnoSiguiente)
-                        EstadoTurnoMensaje = "Su turno está próximo";
+                        EstadoTurnoMensaje = "Su turno es el próximo";
                 });
             });
 
-            _hubConnection.On<TurnoDto, int, int>("TurnoCanceladoCaja", (turnodto, idcaja, turnoSiguiente) =>
+
+
+
+            _hubConnection.On<int, int>("TurnoCanceladoCaja", (turnocancelado, turnoproximo) =>
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if(Turno.Numero == turnodto.Numero)
+                    if (Turno.Numero == turnocancelado)
                     {
-                        Turno.Estado = turnodto.Estado;
-                        Turno.CajaNombre = turnodto.CajaNombre;
+                        Turno.Estado = EstadoTurno.Cancelado.ToString();
                         OnPropertyChanged(nameof(Turno));
                     }
 
 
-                    if (Turno.Numero == turnoSiguiente)
-                        EstadoTurnoMensaje = "Su turno está próximo";
+                    if (Turno.Numero == turnoproximo)
+                        EstadoTurnoMensaje = "Su turno es el próximo";
                 });
             });
 
-            Task.Run(async () =>
-            {
-                await _hubConnection.StartAsync();
-            });
         }
 
 
 
 
         [RelayCommand]
-        public async Task GenerarTurno(string vista)
+        public async Task GenerarTurno()
         {
             try
             {
@@ -177,6 +159,8 @@ namespace CLienteMAUI.ViewModel
                     return;
                 }
 
+                await _hubConnection.StartAsync();
+
 
                 if (_hubConnection.State != HubConnectionState.Connected)
                 {
@@ -185,7 +169,7 @@ namespace CLienteMAUI.ViewModel
 
                 await _hubConnection.InvokeAsync("GenerarTurno");
 
-                await Shell.Current.GoToAsync($"//{vista}");
+                await Shell.Current.GoToAsync($"//Turno");
 
                 IsLoading = false;
 
@@ -206,6 +190,7 @@ namespace CLienteMAUI.ViewModel
         [RelayCommand]
         public async Task GraciasPorSuPreferencia()
         {
+            await _hubConnection.StopAsync();
             await Shell.Current.GoToAsync($"//Gracias");
         }
 

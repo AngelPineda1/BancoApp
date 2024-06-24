@@ -1,4 +1,5 @@
 ﻿using BancoAPI.Helpers;
+using BancoAPI.Hubs;
 using BancoAPI.Models.Dtos;
 using BancoAPI.Models.Entities;
 using BancoAPI.Models.Enum;
@@ -6,29 +7,31 @@ using BancoAPI.Models.Validators;
 using BancoAPI.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Runtime.Intrinsics.Arm;
 
 namespace BancoAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CajasController(CajasRepository cajasRepository, CajasValidator validations) : ControllerBase
+    public class CajasController(CajasRepository cajasRepository, CajasValidator validations, IHubContext<TurnosHub> turnoHub) : ControllerBase
     {
         private CajasRepository _cajasRepository = cajasRepository;
         private CajasValidator _cajasValidator = validations;
+        private readonly IHubContext<TurnosHub> _turnosHub = turnoHub;
         [HttpGet]
         public IActionResult Get()
         {
-            var datos = _cajasRepository.GetAll().Select(x=>new Cajas()
+            var datos = _cajasRepository.GetAll().Select(x => new Cajas()
             {
-                Estado=x.Estado,
-                Nombre=x.Nombre,
-                Username=x.Username,
-                ConnectionId=x.ConnectionId,
-                Contrasena=x.Contrasena,
-                Id=x.Id
+                Estado = x.Estado,
+                Nombre = x.Nombre,
+                Username = x.Username,
+                ConnectionId = x.ConnectionId,
+                Contrasena = x.Contrasena,
+                Id = x.Id
             });
-           
+
             return Ok(datos);
         }
 
@@ -41,7 +44,7 @@ namespace BancoAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(CajasDto dto)
+        public async Task<IActionResult> Post(CajasDto dto)
         {
             if (dto != null)
             {
@@ -58,7 +61,21 @@ namespace BancoAPI.Controllers
                         Estado = (int)EstadoCaja.Activa
                     };
                     cajas.Username = cajas.Username.ToUpper();
+                    cajas.Estado = 0;
                     _cajasRepository.Insert(cajas);
+
+                    var cajasDto = _cajasRepository.GetAll().Select(x => new CajasDto2
+                    {
+                        Id = x.Id,
+                        Estado = x.Estado,
+                        Nombre = x.Nombre,
+                        NumeroActual = x.Estado == (int)EstadoCaja.Inactiva ? "Cerrada"
+                             : x.Estado == (int)EstadoCaja.Activa ? "Activa"
+                             : x.Turno.FirstOrDefault(y => y.Estado == EstadoTurno.Atendiendo.ToString())?.Numero.ToString() ?? "Cerrada",
+                    }).ToList();
+
+                    await _turnosHub.Clients.All.SendAsync("ActualizarCajas", cajasDto, 0);
+
                     return Created();
                 }
                 return BadRequest(results.Errors.Select(x => x.ErrorMessage));
@@ -83,11 +100,11 @@ namespace BancoAPI.Controllers
                         //if (encrypter.IsPasswordChanged(caja.Contrasena, dto.Contrasena))
                         //{
                         //    dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
-                            
+
                         //}
                         Cajas cajas = new Cajas()
                         {
-                            Id=dto.Id,
+                            Id = dto.Id,
                             Nombre = dto.Nombre,
                             Username = dto.Username,
                         };
@@ -105,8 +122,8 @@ namespace BancoAPI.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            var caja= _cajasRepository.Get(id);
-            if (caja != null && caja.Estado!=(int)EstadoCaja.Inactiva)
+            var caja = _cajasRepository.Get(id);
+            if (caja != null && caja.Estado != (int)EstadoCaja.Inactiva)
             {
                 Cajas _cajas = new Cajas()
                 {
@@ -117,7 +134,7 @@ namespace BancoAPI.Controllers
                     Nombre = caja.Nombre,
                 };
                 _cajasRepository.Update(_cajas);
-               return Ok();
+                return Ok();
             }
             return NotFound();
         }

@@ -138,6 +138,16 @@ button {
         border-left-color: #54A0F0 !important;
         border-radius: 50%;
     }
+.btnsalir {
+    margin-left: 15px;
+    vertical-align: middle;
+    color: #fff;
+}
+
+    .btnsalir i {
+        font-size: 30px;
+        color: #fff;
+    }
 
 @keyframes loading-bar-spinner {
     0% {
