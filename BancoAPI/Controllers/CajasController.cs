@@ -90,6 +90,7 @@ namespace BancoAPI.Controllers
         {
             if (dto != null)
             {
+                        
                 var caja = _cajasRepository.Get(dto.Id);
                 if (caja != null)
                 {
@@ -104,15 +105,9 @@ namespace BancoAPI.Controllers
                         //    dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
 
                         //}
-                        var pass = _cajasRepository.Get(dto.Id)?.Contrasena;
-                        Cajas cajas = new Cajas()
-                        {
-                            Id = dto.Id,
-                            Nombre = dto.Nombre,
-                            Username = dto.Username,
-                            Contrasena = pass,
-                        };
-                        _cajasRepository.Update(cajas);
+                       caja.Username=dto.Username;
+                        caja.Nombre=dto.Nombre;
+                        _cajasRepository.Update(caja);
                         return Ok();
                     }
                     return BadRequest(results.Errors.Select(x => x.ErrorMessage));

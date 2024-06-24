@@ -73,16 +73,13 @@ namespace BancoAPI.Controllers
                     if (encrypter.IsPasswordChanged(user.Contrasena, dto.Contrasena))
                     {
                         dto.Contrasena = Encrypter.HashPassword(dto.Contrasena);
+                        user.Contrasena=dto.Contrasena;
 
                     }
 
-                    Usuarios usuarios = new()
-                    {
-                        Nombre = dto.Nombre,
-                        Username = dto.Username,
-                        Contrasena = dto.Contrasena,
-                    };
-                    UsuariosRepository.Update(usuarios);
+                   user.Nombre = dto.Nombre;
+                    user.Username = dto.Username;
+                    UsuariosRepository.Update(user);
                     return Ok();
                 }
                 else
